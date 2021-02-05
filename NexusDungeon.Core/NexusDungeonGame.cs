@@ -12,7 +12,7 @@ namespace NexusDungeon.Core
         private SpriteBatch _spriteBatch;
 
         private Player Player { get; set; }
-        public List<GameObject> GameObjects { get; set; }
+        public List<GameObject> GameObjects { get; set; } = new List<GameObject>();
 
         public NexusDungeonGame()
         {
