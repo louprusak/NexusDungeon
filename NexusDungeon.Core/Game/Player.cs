@@ -25,7 +25,7 @@ namespace NexusDungeon.Core.Game
         protected override void LoadContent()
         {
             base.LoadContent();
-            _texture = Game.Content.Load<Texture2D>("dead");
+            _texture = Game.Content.Load<Texture2D>("dead.png");
         }
 
         public override void Update(GameTime gameTime)
