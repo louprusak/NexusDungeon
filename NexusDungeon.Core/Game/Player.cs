@@ -11,6 +11,7 @@ namespace NexusDungeon.Core.Game
     {
         private Texture2D _texture;
         public Vector2 Position { get; set; } = Vector2.One;
+        public float _speed;
 
         public Player(Microsoft.Xna.Framework.Game game, SpriteBatch spriteBatch) : base(game, spriteBatch)
         {
@@ -20,12 +21,13 @@ namespace NexusDungeon.Core.Game
         public override void Initialize()
         {
             base.Initialize();
+            _speed = 5;
         }
 
         protected override void LoadContent()
         {
             base.LoadContent();
-            _texture = Game.Content.Load<Texture2D>("dead.png");
+            _texture = Game.Content.Load<Texture2D>("Sprites/guy");
         }
 
         public override void Update(GameTime gameTime)
@@ -34,19 +36,19 @@ namespace NexusDungeon.Core.Game
             var keyboardState = Keyboard.GetState();
             if (keyboardState.IsKeyDown(Keys.Left))
             {
-                Position = Vector2.Add(Position, new Vector2(-1, 0));
+                Position = Vector2.Add(Position, new Vector2(-5, 0));
             }
             if (keyboardState.IsKeyDown(Keys.Right))
             {
-                Position = Vector2.Add(Position, new Vector2(1, 0));
+                Position = Vector2.Add(Position, new Vector2(5, 0));
             }
             if (keyboardState.IsKeyDown(Keys.Up))
             {
-                Position = Vector2.Add(Position, new Vector2(0, -1));
+                Position = Vector2.Add(Position, new Vector2(0, -5));
             }
             if (keyboardState.IsKeyDown(Keys.Down))
             {
-                Position = Vector2.Add(Position, new Vector2(0, 1));
+                Position = Vector2.Add(Position, new Vector2(0, 5));
             }
         }
 

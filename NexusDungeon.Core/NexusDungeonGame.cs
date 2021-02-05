@@ -11,6 +11,8 @@ namespace NexusDungeon.Core
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
 
+        private Texture2D background;
+
         private Player Player { get; set; }
         public List<GameObject> GameObjects { get; set; } = new List<GameObject>();
 
@@ -29,11 +31,13 @@ namespace NexusDungeon.Core
 
             _spriteBatch = new SpriteBatch(graphicsDevice: GraphicsDevice);
             Player = new Player(this, _spriteBatch);
+            GameObjects.Add(Player);
         }
 
         protected override void LoadContent()
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
+            background = Content.Load<Texture2D>("Sprites/depart");
 
             // TODO: use this.Content to load your game content here
         }
@@ -55,11 +59,12 @@ namespace NexusDungeon.Core
 
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+            GraphicsDevice.Clear(Color.White);
 
             // TODO: Add your drawing code here
 
             _spriteBatch.Begin();
+            _spriteBatch.Draw(background, new Rectangle(0, 0, 1600, 1060), Color.White);
 
             foreach(var gameObject in GameObjects)
             {
