@@ -70,11 +70,10 @@
     <MonoGameContentReference Include="..\NexusDungeon.Core\Content\Content.mgcb">
       <Link>Content\Content.mgcb</Link>
     </MonoGameContentReference>
-    <MonoGameContentReference Include="Properties\AndroidManifest.xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <MonoGameContentReference Include="Content\Content.mgcb" Visible="false" />
-  </ItemGroup>
+   </ItemGroup>
+   <ItemGroup>
+    <None Include="Properties\AndroidManifest.xml" />
+   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="MonoGame.Content.Builder.Task" Version="3.8.0.1641" />
     <PackageReference Include="MonoGame.Framework.Android" Version="3.8.0.1641" />
