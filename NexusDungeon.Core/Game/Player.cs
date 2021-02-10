@@ -9,13 +9,26 @@ namespace NexusDungeon.Core.Game
 {
     class Player : GameObject
     {
-        private Texture2D _texture;
+        // Animations
+        private Animation _idle_Animation;
+        private Animation _walk_Top_Animation;
+        private Animation _walk_Bot_Animation;
+        private Animation _walk_Left_Animation;
+        private Animation _walk_Right_Animation;
+
+        private AnimationPlayer animationPlayer;
+        private SpriteEffects flip = SpriteEffects.None;
+
+
+
         public Vector2 Position { get; set; } = Vector2.One;
         public float _speed;
+
 
         public Player(Microsoft.Xna.Framework.Game game, SpriteBatch spriteBatch) : base(game, spriteBatch)
         {
             LoadContent();
+            animationPlayer.PlayAnimation(_idle_Animation);
         }
 
         public override void Initialize()
@@ -27,7 +40,13 @@ namespace NexusDungeon.Core.Game
         protected override void LoadContent()
         {
             base.LoadContent();
-            _texture = Game.Content.Load<Texture2D>("Sprites/guy");
+
+            _idle_Animation = new Animation(Game.Content.Load<Texture2D>("Sprites/Player/idle"), 0.1f, true);
+            _walk_Top_Animation = new Animation(Game.Content.Load<Texture2D>("Sprites/Player/walk_top"),0.1f, true);
+            _walk_Bot_Animation = new Animation(Game.Content.Load<Texture2D>("Sprites/Player/walk_bot"), 0.1f, true);
+            _walk_Left_Animation = new Animation(Game.Content.Load<Texture2D>("Sprites/Player/walk_left"), 0.1f, true);
+            _walk_Right_Animation = new Animation(Game.Content.Load<Texture2D>("Sprites/Player/walk_right"), 0.1f, true);
+           
         }
 
         public override void Update(GameTime gameTime)
@@ -37,25 +56,30 @@ namespace NexusDungeon.Core.Game
             if (keyboardState.IsKeyDown(Keys.Left))
             {
                 Position = Vector2.Add(Position, new Vector2(-5, 0));
+                animationPlayer.PlayAnimation(_walk_Right_Animation);
             }
             if (keyboardState.IsKeyDown(Keys.Right))
             {
                 Position = Vector2.Add(Position, new Vector2(5, 0));
+                animationPlayer.PlayAnimation(_walk_Left_Animation);
             }
             if (keyboardState.IsKeyDown(Keys.Up))
             {
                 Position = Vector2.Add(Position, new Vector2(0, -5));
+                animationPlayer.PlayAnimation(_walk_Top_Animation);
             }
             if (keyboardState.IsKeyDown(Keys.Down))
             {
                 Position = Vector2.Add(Position, new Vector2(0, 5));
+                animationPlayer.PlayAnimation(_walk_Bot_Animation);
             }
         }
 
         public override void Draw(GameTime gameTime)
         {
             base.Draw(gameTime);
-            _spriteBatch.Draw(_texture, Position, Color.White);
+            
+            animationPlayer.Draw(gameTime, _spriteBatch, Position, flip);
         }
 
 

@@ -8,6 +8,9 @@ namespace NexusDungeon.Core
 {
     public class NexusDungeonGame : Microsoft.Xna.Framework.Game
     {
+        private static int _screenHeight;
+        private static int _screenWitdh;
+
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
 
@@ -26,6 +29,8 @@ namespace NexusDungeon.Core
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
+            _screenHeight  =  _graphics.PreferredBackBufferHeight;
+            _screenWitdh = _graphics.PreferredBackBufferWidth;
 
             base.Initialize();
 
