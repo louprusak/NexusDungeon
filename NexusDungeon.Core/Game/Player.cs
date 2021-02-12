@@ -41,11 +41,11 @@ namespace NexusDungeon.Core.Game
         {
             base.LoadContent();
 
-            _idle_Animation = new Animation(Game.Content.Load<Texture2D>("Sprites/Player/idle"), 0.1f, true);
-            _walk_Top_Animation = new Animation(Game.Content.Load<Texture2D>("Sprites/Player/walk_top"),0.1f, true);
-            _walk_Bot_Animation = new Animation(Game.Content.Load<Texture2D>("Sprites/Player/walk_bot"), 0.1f, true);
-            _walk_Left_Animation = new Animation(Game.Content.Load<Texture2D>("Sprites/Player/walk_left"), 0.1f, true);
-            _walk_Right_Animation = new Animation(Game.Content.Load<Texture2D>("Sprites/Player/walk_right"), 0.1f, true);
+            _idle_Animation = new Animation(Game.Content.Load<Texture2D>("Sprites/Player/idle"), 0.06f,true);
+            _walk_Top_Animation = new Animation(Game.Content.Load<Texture2D>("Sprites/Player/top"), 0.06f, true);
+            _walk_Bot_Animation = new Animation(Game.Content.Load<Texture2D>("Sprites/Player/bot"), 0.06f, true);
+            _walk_Left_Animation = new Animation(Game.Content.Load<Texture2D>("Sprites/Player/left"), 0.06f, true);
+            _walk_Right_Animation = new Animation(Game.Content.Load<Texture2D>("Sprites/Player/right"), 0.06f, true);
            
         }
 
@@ -56,12 +56,12 @@ namespace NexusDungeon.Core.Game
             if (keyboardState.IsKeyDown(Keys.Left))
             {
                 Position = Vector2.Add(Position, new Vector2(-5, 0));
-                animationPlayer.PlayAnimation(_walk_Right_Animation);
+                animationPlayer.PlayAnimation(_walk_Left_Animation);
             }
             if (keyboardState.IsKeyDown(Keys.Right))
             {
                 Position = Vector2.Add(Position, new Vector2(5, 0));
-                animationPlayer.PlayAnimation(_walk_Left_Animation);
+                animationPlayer.PlayAnimation(_walk_Right_Animation);
             }
             if (keyboardState.IsKeyDown(Keys.Up))
             {

@@ -41,7 +41,7 @@ namespace NexusDungeon.Core.Game
         public int FrameCount
         {
             // Assume square frames.
-            get { return Texture.Width / FrameHeight; }
+            get { return Texture.Width / 32; }
         }
 
         /// <summary>
