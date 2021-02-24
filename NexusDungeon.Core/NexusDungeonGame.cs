@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Media;
 using NexusDungeon.Core.Game;
 using System.Collections.Generic;
 
@@ -39,10 +40,20 @@ namespace NexusDungeon.Core
 
         protected override void LoadContent()
         {
+            this.Content.RootDirectory = "Content";
+
             _spriteBatch = new SpriteBatch(GraphicsDevice);
             background = Content.Load<Texture2D>("Sprites/depart");
 
-            // TODO: use this.Content to load your game content here
+            //Musique d'ambiance du niveau
+            try
+            {
+                MediaPlayer.IsRepeating = true;
+                MediaPlayer.Play(Content.Load<Song>("Sprites/Sounds/forest"));
+            }
+            catch { }
+            
+
         }
 
         protected override void Update(GameTime gameTime)
