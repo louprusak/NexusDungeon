@@ -34,6 +34,7 @@ namespace NexusDungeon.Core.Game
 
         //Position
         public Vector2 Position { get; set; } = Vector2.One;
+        public Vector2 NextPosition { get; set; }
         public float _speed;
 
         //Constructeur
@@ -93,7 +94,7 @@ namespace NexusDungeon.Core.Game
                     animationPlayer.PlayAnimation(_walk_Bot_Animation);
                 }
             }
-            
+
         }
 
         public override void Draw(GameTime gameTime)

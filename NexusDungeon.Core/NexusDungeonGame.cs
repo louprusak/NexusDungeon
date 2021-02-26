@@ -5,15 +5,17 @@ using Microsoft.Xna.Framework.Media;
 using NexusDungeon.Core.Game;
 using System.Collections.Generic;
 
+
 namespace NexusDungeon.Core
 {
     public class NexusDungeonGame : Microsoft.Xna.Framework.Game
     {
-
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
 
-        private Texture2D background;
+        private Texture2D _background;
+
+        private Color[] _colorBackground;
 
         private Player Player { get; set; }
         public List<GameObject> GameObjects { get; set; } = new List<GameObject>();
@@ -32,10 +34,12 @@ namespace NexusDungeon.Core
             _graphics.PreferredBackBufferWidth= 320;
 
             base.Initialize();
-
             _spriteBatch = new SpriteBatch(graphicsDevice: GraphicsDevice);
             Player = new Player(this, _spriteBatch);
             GameObjects.Add(Player);
+
+            _colorBackground = new Color[_background.Width * _background.Height];
+            _background.GetData<Color>(_colorBackground);
         }
 
         protected override void LoadContent()
@@ -43,7 +47,7 @@ namespace NexusDungeon.Core
             this.Content.RootDirectory = "Content";
 
             _spriteBatch = new SpriteBatch(GraphicsDevice);
-            background = Content.Load<Texture2D>("Sprites/depart");
+            _background = Content.Load<Texture2D>("Sprites/depart");
 
             //Musique d'ambiance du niveau
             try
@@ -69,6 +73,10 @@ namespace NexusDungeon.Core
             {
                 gameObject.Update(gameTime);
             }
+            Player.NextPosition = Player.Position;
+
+            if (CanMove((int)Player.NextPosition.X, (int)Player.NextPosition.Y))
+                Player.Position = Player.NextPosition;
         }
 
         protected override void Draw(GameTime gameTime)
@@ -78,7 +86,7 @@ namespace NexusDungeon.Core
             // TODO: Add your drawing code here
 
             _spriteBatch.Begin();
-            _spriteBatch.Draw(background, new Rectangle(0, 0, 1600, 1060), Color.White);
+            _spriteBatch.Draw(_background, new Rectangle(0, 0, 1600, 1060), Color.White);
 
             foreach(var gameObject in GameObjects)
             {
@@ -89,6 +97,24 @@ namespace NexusDungeon.Core
             _spriteBatch.End();
 
             base.Draw(gameTime);
+        }
+
+
+        private Color GetColorAt(int x, int y)
+        {
+            Color color = Color.White;
+            // La position doit être valide
+ 
+            if (x >= 0 && x < _background.Width && y >= 0 && y < _background.Height)
+                color = _colorBackground[x + y * _background.Width];
+
+            return color;
+        }
+
+        private bool CanMove(int x, int y)
+        {
+            // On évite le blanc (0xFFFFFF)
+            return GetColorAt(x, y) != Color.White;
         }
     }
 }

@@ -4,12 +4,13 @@ using Microsoft.Xna.Framework.Content;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 
 namespace NexusDungeon.Core.Game
 {
+    /*
     class Level : IDisposable
     {
+        
         //Entités dans le niveau
         public Player Player { get; set; }
         private List<Enemy> enemies = new List<Enemy>();
@@ -28,7 +29,7 @@ namespace NexusDungeon.Core.Game
         public ContentManager Content { get; set; }
         public int Height
         {
-            get { return 0 /*tiles.GetLength(1)*/; }
+            //get { return 0 /*tiles.GetLength(1); }
         }
         public int Width
         {
@@ -107,6 +108,11 @@ namespace NexusDungeon.Core.Game
             }
         }
 
+        public void Dispose()
+        {
+            throw new NotImplementedException();
+        }
+
         //Méthodes
 
 
@@ -117,5 +123,5 @@ namespace NexusDungeon.Core.Game
 
 
 
-    }
+    }*/
 }
