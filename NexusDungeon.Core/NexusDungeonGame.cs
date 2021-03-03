@@ -30,8 +30,9 @@ namespace NexusDungeon.Core
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
-            _graphics.PreferredBackBufferHeight = 480;
-            _graphics.PreferredBackBufferWidth= 320;
+            _graphics.PreferredBackBufferHeight = 1080;
+            _graphics.PreferredBackBufferWidth= 1920;
+          
 
             base.Initialize();
             _spriteBatch = new SpriteBatch(graphicsDevice: GraphicsDevice);
@@ -47,13 +48,14 @@ namespace NexusDungeon.Core
             this.Content.RootDirectory = "Content";
 
             _spriteBatch = new SpriteBatch(GraphicsDevice);
+            
             _background = Content.Load<Texture2D>("Sprites/hub");
 
             //Musique d'ambiance du niveau
             try
             {
                 MediaPlayer.IsRepeating = true;
-                MediaPlayer.Play(Content.Load<Song>("Sprites/Sounds/forest"));
+                //MediaPlayer.Play(Content.Load<Song>("Sprites/Sounds/forest"));
             }
             catch { }
             
@@ -86,7 +88,7 @@ namespace NexusDungeon.Core
             // TODO: Add your drawing code here
 
             _spriteBatch.Begin();
-            _spriteBatch.Draw(_background, new Rectangle(0, 0, 1600, 1060), Color.White);
+            _spriteBatch.Draw(_background, new Rectangle(0, 0, Window.ClientBounds.Width, Window.ClientBounds.Height), Color.White);
 
             foreach(var gameObject in GameObjects)
             {

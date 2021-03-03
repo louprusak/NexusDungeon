@@ -1,6 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Media;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -15,12 +17,14 @@ namespace NexusDungeon.Core.Game
         private Animation _walk_Bot_Animation;
         private Animation _walk_Left_Animation;
         private Animation _walk_Right_Animation;
-
         private AnimationPlayer animationPlayer;
         private SpriteEffects flip = SpriteEffects.None;
 
-        private Rectangle localBounds;
+        //Sounds
+        private Song _walk_sound;
 
+        //Bounds
+        private Rectangle localBounds;
         public Rectangle BoundingRectangle
         {
             get
@@ -33,22 +37,24 @@ namespace NexusDungeon.Core.Game
         }
 
         //Position
-        public Vector2 Position { get; set; } = Vector2.One;
+        public Vector2 Position { get; set; }
         public Vector2 NextPosition { get; set; }
+
+        //Stats
         public float _speed;
 
         //Constructeur
         public Player(Microsoft.Xna.Framework.Game game, SpriteBatch spriteBatch) : base(game, spriteBatch)
         {
             LoadContent();
-            animationPlayer.PlayAnimation(_idle_Animation);
+           
+            Reset(game);
         }
 
         //Méthodes Monogame
         public override void Initialize()
         {
             base.Initialize();
-            _speed = 5;
         }
 
         protected override void LoadContent()
@@ -60,6 +66,8 @@ namespace NexusDungeon.Core.Game
             _walk_Bot_Animation = new Animation(Game.Content.Load<Texture2D>("Sprites/Player/bot"), 0.06f, true);
             _walk_Left_Animation = new Animation(Game.Content.Load<Texture2D>("Sprites/Player/left"), 0.06f, true);
             _walk_Right_Animation = new Animation(Game.Content.Load<Texture2D>("Sprites/Player/right"), 0.06f, true);
+
+            _walk_sound = Game.Content.Load<Song>("Sprites/Sounds/footsteps");
            
         }
 
@@ -70,28 +78,34 @@ namespace NexusDungeon.Core.Game
             if (keyboardState.GetPressedKeyCount() == 0)
             {
                 animationPlayer.PlayAnimation(_idle_Animation);
+                
             }
             else
             {
+               
                 if (keyboardState.IsKeyDown(Keys.Left))
                 {
-                    Position = Vector2.Add(Position, new Vector2(-5, 0));
+                    Position = Vector2.Add(Position, new Vector2(-(_speed), 0));
                     animationPlayer.PlayAnimation(_walk_Left_Animation);
+                    
                 }
                 if (keyboardState.IsKeyDown(Keys.Right))
                 {
-                    Position = Vector2.Add(Position, new Vector2(5, 0));
+                    Position = Vector2.Add(Position, new Vector2(_speed, 0));
                     animationPlayer.PlayAnimation(_walk_Right_Animation);
+                   
                 }
                 if (keyboardState.IsKeyDown(Keys.Up))
                 {
-                    Position = Vector2.Add(Position, new Vector2(0, -5));
+                    Position = Vector2.Add(Position, new Vector2(0, -(_speed)));
                     animationPlayer.PlayAnimation(_walk_Top_Animation);
+                    
                 }
                 if (keyboardState.IsKeyDown(Keys.Down))
                 {
-                    Position = Vector2.Add(Position, new Vector2(0, 5));
+                    Position = Vector2.Add(Position, new Vector2(0, (_speed)));
                     animationPlayer.PlayAnimation(_walk_Bot_Animation);
+                    
                 }
             }
 
@@ -103,6 +117,22 @@ namespace NexusDungeon.Core.Game
             
             animationPlayer.Draw(gameTime, _spriteBatch, Position, flip);
         }
+
+        /// <summary>
+        /// Reset la position et les stats du joueur
+        /// </summary>
+        /// <param name="game">Instance actuelle du jeu</param>
+        public void Reset(Microsoft.Xna.Framework.Game game)
+        {
+            animationPlayer.PlayAnimation(_idle_Animation);
+
+            int tmpx = game.Window.ClientBounds.Width / 2;
+            int tmpy = game.Window.ClientBounds.Height / 2;
+            Position = new Vector2(tmpx, tmpy);
+
+            _speed = 5;
+        }
+
 
 
         public static implicit operator PlayerIndex(Player v)
