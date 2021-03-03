@@ -47,7 +47,7 @@ namespace NexusDungeon.Core
             this.Content.RootDirectory = "Content";
 
             _spriteBatch = new SpriteBatch(GraphicsDevice);
-            _background = Content.Load<Texture2D>("Sprites/depart");
+            _background = Content.Load<Texture2D>("Sprites/hub");
 
             //Musique d'ambiance du niveau
             try
