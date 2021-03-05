@@ -45,8 +45,7 @@ namespace NexusDungeon.Core
             Player = new Player(this, _spriteBatch);
             GameObjects.Add(Player);
 
-            _colorBackground = new Color[_background.Width * _background.Height];
-            _background.GetData<Color>(_colorBackground);
+            
         }
 
         protected override void LoadContent()
@@ -57,7 +56,8 @@ namespace NexusDungeon.Core
             
             //_background = Content.Load<Texture2D>("Sprites/hub");
             _background = Content.Load<Texture2D>("Sprites/level");
-
+            _colorBackground = new Color[_background.Width * _background.Height];
+            _background.GetData<Color>(_colorBackground);
             //Musique d'ambiance du niveau
             try
             {
@@ -83,8 +83,7 @@ namespace NexusDungeon.Core
             {
                 gameObject.Update(gameTime);
             }
-            Player.NextPosition = Player.Position;
-
+            Player.Update(gameTime);
             if (CanMove((int)Player.NextPosition.X, (int)Player.NextPosition.Y))
                 Player.Position = Player.NextPosition;
         }
@@ -114,7 +113,7 @@ namespace NexusDungeon.Core
         {
             Color color = Color.White;
             // La position doit être valide
- 
+
             if (x >= 0 && x < _background.Width && y >= 0 && y < _background.Height)
                 color = _colorBackground[x + y * _background.Width];
 
@@ -123,8 +122,15 @@ namespace NexusDungeon.Core
 
         private bool CanMove(int x, int y)
         {
-            // On évite le blanc (0xFFFFFF)
-            return GetColorAt(x, y) != Color.White;
+            /*
+            if (GetColorAt(x, y) == Color.White)
+                return false;
+            if (GetColorAt(x, y) != _colorBackground[1024 + 200 * _background.Width])
+                return true;
+            else
+                return false;
+            */
+            return true;
         }
     }
 }

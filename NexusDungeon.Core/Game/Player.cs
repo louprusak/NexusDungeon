@@ -92,6 +92,7 @@ namespace NexusDungeon.Core.Game
         public override void Update(GameTime gameTime)
         {
             base.Update(gameTime);
+            NextPosition = Position;
             var keyboardState = Keyboard.GetState();
             if (keyboardState.GetPressedKeyCount() == 0)
             {
@@ -103,25 +104,25 @@ namespace NexusDungeon.Core.Game
                
                 if (keyboardState.IsKeyDown(Keys.Left))
                 {
-                    Position = Vector2.Add(Position, new Vector2(-(_speed), 0));
+                    NextPosition = Vector2.Add(Position, new Vector2(-(_speed), 0));
                     animationPlayer.PlayAnimation(_walk_Left_Animation);
                     
                 }
                 if (keyboardState.IsKeyDown(Keys.Right))
                 {
-                    Position = Vector2.Add(Position, new Vector2(_speed, 0));
+                    NextPosition = Vector2.Add(Position, new Vector2(_speed, 0));
                     animationPlayer.PlayAnimation(_walk_Right_Animation);
                    
                 }
                 if (keyboardState.IsKeyDown(Keys.Up))
                 {
-                    Position = Vector2.Add(Position, new Vector2(0, -(_speed)));
+                    NextPosition = Vector2.Add(Position, new Vector2(0, -(_speed)));
                     animationPlayer.PlayAnimation(_walk_Top_Animation);
                     
                 }
                 if (keyboardState.IsKeyDown(Keys.Down))
                 {
-                    Position = Vector2.Add(Position, new Vector2(0, (_speed)));
+                    NextPosition = Vector2.Add(Position, new Vector2(0, (_speed)));
                     animationPlayer.PlayAnimation(_walk_Bot_Animation);
                     
                 }
