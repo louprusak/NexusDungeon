@@ -20,12 +20,18 @@ namespace NexusDungeon.Core
         private Player Player { get; set; }
         public List<GameObject> GameObjects { get; set; } = new List<GameObject>();
 
+        //################################################################################################################################################################//
+
+
         public NexusDungeonGame()
         {
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
         }
+
+        //################################################################################################################################################################//
+
 
         protected override void Initialize()
         {
@@ -49,13 +55,15 @@ namespace NexusDungeon.Core
 
             _spriteBatch = new SpriteBatch(GraphicsDevice);
             
-            _background = Content.Load<Texture2D>("Sprites/hub");
+            //_background = Content.Load<Texture2D>("Sprites/hub");
+            _background = Content.Load<Texture2D>("Sprites/level");
 
             //Musique d'ambiance du niveau
             try
             {
                 MediaPlayer.IsRepeating = true;
-                //MediaPlayer.Play(Content.Load<Song>("Sprites/Sounds/forest"));
+                MediaPlayer.Play(Content.Load<Song>("Sprites/Sounds/forest"));
+                MediaPlayer.Volume = (float) 0.3 ;
             }
             catch { }
             

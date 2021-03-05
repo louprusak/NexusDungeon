@@ -42,14 +42,32 @@ namespace NexusDungeon.Core.Game
 
         //Stats
         public float _speed;
+        public Level Level
+        {
+            get;
+        }
+        public Microsoft.Xna.Framework.Game game;
+        public SpriteBatch spriteBatch;
+
 
         //Constructeur
         public Player(Microsoft.Xna.Framework.Game game, SpriteBatch spriteBatch) : base(game, spriteBatch)
         {
+            this.game = game;
+            this.spriteBatch = spriteBatch;
             LoadContent();
            
             Reset(game);
         }
+
+        /*public Player(Level level, Vector2 position) : base(game, spriteBatch)
+        {
+            this.Level = level;
+
+            LoadContent();
+
+            Reset(position);
+        }*/
 
         //Méthodes Monogame
         public override void Initialize()
@@ -133,7 +151,12 @@ namespace NexusDungeon.Core.Game
             _speed = 5;
         }
 
-
+        public void Reset(Vector2 position)
+        {
+            Position = position;
+            
+            animationPlayer.PlayAnimation(_idle_Animation);
+        }
 
         public static implicit operator PlayerIndex(Player v)
         {

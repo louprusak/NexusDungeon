@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -8,7 +9,7 @@ using System.IO;
 namespace NexusDungeon.Core.Game
 {
     
-    /*class Level : IDisposable
+    class Level : IDisposable
     {
         //Structure
         private Tile[,] tiles;
@@ -41,15 +42,21 @@ namespace NexusDungeon.Core.Game
             get { return tiles.GetLength(0); }
         }
 
+        //################################################################################################################################################################//
+
         //Constructeur
         public Level(IServiceProvider serviceProvider, Stream fileStream, int levelIndex)
         {
             Content = new ContentManager(serviceProvider, "Content");
-            
+
             LoadTiles(fileStream);
 
             exitReachedSound = Content.Load<SoundEffect>("Sounds/forest");
         }
+
+        //################################################################################################################################################################//
+
+        #region LoadTiles
 
         private void LoadTiles(Stream fileStream)
         {
@@ -96,33 +103,64 @@ namespace NexusDungeon.Core.Game
             {
                 //Zone vide
                 case '.':
-                    return new Tile(null, TileCollision.Passable);
+                    return new Tile(Content.Load<Texture2D>("Sprites/vide"), TileCollision.Impassable);
                 //Mur
                 case '#':
-                    return new Tile("Mur", TileCollision.Impassable);
+                    return new Tile(Content.Load<Texture2D>("Sprites/mur"), TileCollision.Impassable);
                 //Sol
-                case '-':
-                    return new Tile("Sol", TileCollision.Passable);
+                case '_':
+                    return new Tile(Content.Load<Texture2D>("Sprites/sol"), TileCollision.Passable);
+                //Sol
+                case 'X':
+                    return LoadExitTile(x, y);
+                //Depart
+                case '1':
+                    return LoadStartTile(x, y);
                 //Enemis
-                case 'A':
+                /*case 'A':
                     return new Tile(x, y, "MonsterA");
                 case 'B':
                     return new Tile(x, y, "MonsterB");
                 case 'C':
                     return new Tile(x, y, "MonsterC");
                 case 'D':
-                    return new Tile(x, y, "MonsterD");
+                    return new Tile(x, y, "MonsterD");*/
+                // Unknown tile type character
+                default:
+                    throw new NotSupportedException(String.Format("Unsupported tile type character '{0}' at position {1}, {2}.", tileType, x, y));
             }
         }
+
+        private Tile LoadExitTile(int x, int y)
+        {
+            if (exit != InvalidPosition)
+                throw new NotSupportedException("A level may only have one exit.");
+
+            exit = GetBounds(x, y).Center;
+
+            return new Tile(Content.Load<Texture2D>("Sprites/sortie"), TileCollision.Passable);
+        }
+
+        private Tile LoadStartTile(int x, int y)
+        {
+            if (Player != null)
+                throw new NotSupportedException("A level may only have one starting point.");
+
+            start = RectangleUtils.GetBottomCenter(GetBounds(x, y));
+            //Player = new Player(this, start);
+
+            return new Tile(Content.Load<Texture2D>("Sprites/depart"), TileCollision.Passable);
+        }
+
 
         public void Dispose()
         {
             Content.Unload();
         }
 
+        #endregion
 
-
-
+        //################################################################################################################################################################//
 
         #region Bounds and collision
 
@@ -152,24 +190,11 @@ namespace NexusDungeon.Core.Game
             return new Rectangle(x * Tile.Width, y * Tile.Height, Tile.Width, Tile.Height);
         }
 
-        /// <summary>
-        /// Width of level measured in tiles.
-        /// </summary>
-        public int Width
-        {
-            get { return tiles.GetLength(0); }
-        }
 
-        /// <summary>
-        /// Height of the level measured in tiles.
-        /// </summary>
-        public int Height
-        {
-            get { return tiles.GetLength(1); }
-        }
 
         #endregion
 
+        //################################################################################################################################################################//
 
         #region Update
 
@@ -177,73 +202,35 @@ namespace NexusDungeon.Core.Game
         /// Updates all objects in the world, performs collision between them,
         /// and handles the time limit with scoring.
         /// </summary>
-        public void Update(
-            GameTime gameTime,
-            KeyboardState keyboardState,
-            GamePadState gamePadState,
-            AccelerometerState accelState,
-            DisplayOrientation orientation)
+        public void Update(GameTime gameTime)
         {
-            // Pause while the player is dead or time is expired.
-            if (!Player.IsAlive || TimeRemaining == TimeSpan.Zero)
+            
+            if (!ReachedExit)
             {
-                // Still want to perform physics on the player.
-                Player.ApplyPhysics(gameTime);
-            }
-            else if (ReachedExit)
-            {
-                // Animate the time being converted into points.
-                int seconds = (int)Math.Round(gameTime.ElapsedGameTime.TotalSeconds * 100.0f);
-                seconds = Math.Min(seconds, (int)Math.Ceiling(TimeRemaining.TotalSeconds));
-                timeRemaining -= TimeSpan.FromSeconds(seconds);
-                score += seconds * PointsPerSecond;
-            }
-            else
-            {
-                timeRemaining -= gameTime.ElapsedGameTime;
-                Player.Update(gameTime, keyboardState, gamePadState, accelState, orientation);
-                UpdateGems(gameTime);
+                
+                Player.Update(gameTime);
+                
 
                 // Falling off the bottom of the level kills the player.
-                if (Player.BoundingRectangle.Top >= Height * Tile.Height)
-                    OnPlayerKilled(null);
+                //if (Player.BoundingRectangle.Top >= Height * Tile.Height)
+                    //OnPlayerKilled(null);
 
-                UpdateEnemies(gameTime);
+                //UpdateEnemies(gameTime);
 
                 // The player has reached the exit if they are standing on the ground and
                 // his bounding rectangle contains the center of the exit tile. They can only
                 // exit when they have collected all of the gems.
-                if (Player.IsAlive &&
-                    Player.IsOnGround &&
+                if (//Player.IsAlive &&
+                   // Player.IsOnGround &&
                     Player.BoundingRectangle.Contains(exit))
                 {
                     OnExitReached();
                 }
             }
 
-            // Clamp the time remaining at zero.
-            if (timeRemaining < TimeSpan.Zero)
-                timeRemaining = TimeSpan.Zero;
         }
 
-        /// <summary>
-        /// Animates each gem and checks to allows the player to collect them.
-        /// </summary>
-        private void UpdateGems(GameTime gameTime)
-        {
-            for (int i = 0; i < gems.Count; ++i)
-            {
-                Gem gem = gems[i];
-
-                gem.Update(gameTime);
-
-                if (gem.BoundingCircle.Intersects(Player.BoundingRectangle))
-                {
-                    gems.RemoveAt(i--);
-                    OnGemCollected(gem, Player);
-                }
-            }
-        }
+        
 
         /// <summary>
         /// Animates each enemy and allow them to kill the player.
@@ -255,24 +242,14 @@ namespace NexusDungeon.Core.Game
                 enemy.Update(gameTime);
 
                 // Touching an enemy instantly kills the player
-                if (enemy.BoundingRectangle.Intersects(Player.BoundingRectangle))
-                {
-                    OnPlayerKilled(enemy);
-                }
+                //if (enemy.BoundingRectangle.Intersects(Player.BoundingRectangle))
+                //{
+                    //OnPlayerKilled(enemy);
+                //}
             }
         }
 
-        /// <summary>
-        /// Called when a gem is collected.
-        /// </summary>
-        /// <param name="gem">The gem that was collected.</param>
-        /// <param name="collectedBy">The player who collected this gem.</param>
-        private void OnGemCollected(Gem gem, Player collectedBy)
-        {
-            score += gem.PointValue;
-
-            gem.OnCollected(collectedBy);
-        }
+        
 
         /// <summary>
         /// Called when the player is killed.
@@ -283,7 +260,7 @@ namespace NexusDungeon.Core.Game
         /// </param>
         private void OnPlayerKilled(Enemy killedBy)
         {
-            Player.OnKilled(killedBy);
+            //Player.OnKilled(killedBy);
         }
 
         /// <summary>
@@ -291,9 +268,9 @@ namespace NexusDungeon.Core.Game
         /// </summary>
         private void OnExitReached()
         {
-            Player.OnReachedExit();
-            exitReachedSound.Play();
-            reachedExit = true;
+            //Player.OnReachedExit();
+            //exitReachedSound.Play();
+            ReachedExit = true;
         }
 
         /// <summary>
@@ -306,6 +283,8 @@ namespace NexusDungeon.Core.Game
 
         #endregion
 
+        //################################################################################################################################################################//
+
         #region Draw
 
         /// <summary>
@@ -313,21 +292,23 @@ namespace NexusDungeon.Core.Game
         /// </summary>
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
-            for (int i = 0; i <= EntityLayer; ++i)
-                spriteBatch.Draw(layers[i], Vector2.Zero, Color.White);
+            //for (int i = 0; i <= EntityLayer; ++i)
+                //spriteBatch.Draw(layers[i], Vector2.Zero, Color.White);
 
             DrawTiles(spriteBatch);
 
-            foreach (Gem gem in gems)
-                gem.Draw(gameTime, spriteBatch);
+            //foreach (Gem gem in gems)
+                //gem.Draw(gameTime, spriteBatch);
 
-            Player.Draw(gameTime, spriteBatch);
+            Player.Draw(gameTime
+                //, spriteBatch
+                );
 
             foreach (Enemy enemy in enemies)
-                enemy.Draw(gameTime, spriteBatch);
+                enemy.Draw(gameTime);
 
-            for (int i = EntityLayer + 1; i < layers.Length; ++i)
-                spriteBatch.Draw(layers[i], Vector2.Zero, Color.White);
+            //for (int i = EntityLayer + 1; i < layers.Length; ++i)
+                //spriteBatch.Draw(layers[i], Vector2.Zero, Color.White);
         }
 
         /// <summary>
@@ -359,5 +340,5 @@ namespace NexusDungeon.Core.Game
 
 
 
-    }*/
+    }
 }
