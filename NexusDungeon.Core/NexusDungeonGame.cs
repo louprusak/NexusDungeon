@@ -38,7 +38,7 @@ namespace NexusDungeon.Core
             // TODO: Add your initialization logic here
             _graphics.PreferredBackBufferHeight = 1080;
             _graphics.PreferredBackBufferWidth= 1920;
-          
+            _graphics.ApplyChanges();
 
             base.Initialize();
             _spriteBatch = new SpriteBatch(graphicsDevice: GraphicsDevice);
