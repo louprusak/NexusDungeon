@@ -17,6 +17,10 @@ namespace NexusDungeon.Core.Game
         private Animation _walk_Bot_Animation;
         private Animation _walk_Left_Animation;
         private Animation _walk_Right_Animation;
+        private Animation _attack_Right_Animation;
+        private Animation _attack_Top_Animation;
+        private Animation _attack_Left_Animation;
+        private Animation _attack_Bot_Animation;
         private AnimationPlayer animationPlayer;
         private SpriteEffects flip = SpriteEffects.None;
 
@@ -47,6 +51,7 @@ namespace NexusDungeon.Core.Game
             get;
         }
         public Microsoft.Xna.Framework.Game game;
+        
         public SpriteBatch spriteBatch;
 
 
@@ -60,14 +65,14 @@ namespace NexusDungeon.Core.Game
             Reset(game);
         }
 
-        /*public Player(Level level, Vector2 position) : base(game, spriteBatch)
+        public Player(Microsoft.Xna.Framework.Game game, SpriteBatch spriteBatch,Level level, Vector2 position) : base(game, spriteBatch)
         {
             this.Level = level;
 
             LoadContent();
 
             Reset(position);
-        }*/
+        }
 
         //Méthodes Monogame
         public override void Initialize()
@@ -84,6 +89,10 @@ namespace NexusDungeon.Core.Game
             _walk_Bot_Animation = new Animation(Game.Content.Load<Texture2D>("Sprites/Player/bot"), 0.06f, true);
             _walk_Left_Animation = new Animation(Game.Content.Load<Texture2D>("Sprites/Player/left"), 0.06f, true);
             _walk_Right_Animation = new Animation(Game.Content.Load<Texture2D>("Sprites/Player/right"), 0.06f, true);
+            _attack_Right_Animation = new Animation(Game.Content.Load<Texture2D>("Sprites/Player/attack_right"), 0.06f, true);
+            _attack_Left_Animation = new Animation(Game.Content.Load<Texture2D>("Sprites/Player/attack_left"), 0.06f, true);
+            _attack_Top_Animation = new Animation(Game.Content.Load<Texture2D>("Sprites/Player/attack_top"), 0.06f, true);
+            _attack_Bot_Animation = new Animation(Game.Content.Load<Texture2D>("Sprites/Player/attack_bot"), 0.06f, true);
 
             _walk_sound = Game.Content.Load<Song>("Sprites/Sounds/footsteps");
            
@@ -101,34 +110,53 @@ namespace NexusDungeon.Core.Game
             }
             else
             {
-               
+                if (keyboardState.IsKeyDown(Keys.P))                                        //Si le joueur appuie sur la touche p il lance les niveaux
+                {
+                    NexusDungeonGame tmpgame = (NexusDungeonGame)game;
+                    tmpgame.PlayLevel();
+                }
                 if (keyboardState.IsKeyDown(Keys.Left))
                 {
                     NextPosition = Vector2.Add(Position, new Vector2(-(_speed), 0));
                     animationPlayer.PlayAnimation(_walk_Left_Animation);
-                    
+                    if (keyboardState.IsKeyDown(Keys.Space))
+                    {
+                        animationPlayer.PlayAnimation(_attack_Left_Animation);
+                    }
                 }
                 if (keyboardState.IsKeyDown(Keys.Right))
                 {
                     NextPosition = Vector2.Add(Position, new Vector2(_speed, 0));
                     animationPlayer.PlayAnimation(_walk_Right_Animation);
-                   
+                    if (keyboardState.IsKeyDown(Keys.Space))
+                    {
+                        animationPlayer.PlayAnimation(_attack_Right_Animation);
+                    }
                 }
                 if (keyboardState.IsKeyDown(Keys.Up))
                 {
                     NextPosition = Vector2.Add(Position, new Vector2(0, -(_speed)));
                     animationPlayer.PlayAnimation(_walk_Top_Animation);
-                    
+                    if (keyboardState.IsKeyDown(Keys.Space))
+                    {
+                        animationPlayer.PlayAnimation(_attack_Top_Animation);
+                    }
                 }
                 if (keyboardState.IsKeyDown(Keys.Down))
                 {
                     NextPosition = Vector2.Add(Position, new Vector2(0, (_speed)));
                     animationPlayer.PlayAnimation(_walk_Bot_Animation);
-                    
+                    if (keyboardState.IsKeyDown(Keys.Space))
+                    {
+                        animationPlayer.PlayAnimation(_attack_Bot_Animation);
+                    }
                 }
+
             }
 
         }
+
+        
 
         public override void Draw(GameTime gameTime)
         {

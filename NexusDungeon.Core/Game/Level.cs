@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Media;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -25,11 +26,13 @@ namespace NexusDungeon.Core.Game
 
         //Sounds
         private SoundEffect music;
-        private SoundEffect exitReachedSound;
+        private Song exitReachedSound;
         private SoundEffect chestSound;
 
         //Propriétés du Level
         public bool ReachedExit { get; set; }
+        private Microsoft.Xna.Framework.Game game;
+        private SpriteBatch spriteBatch;
 
         //Contenu du Level
         public ContentManager Content { get; set; }
@@ -45,16 +48,36 @@ namespace NexusDungeon.Core.Game
         //################################################################################################################################################################//
 
         //Constructeur
-        public Level(IServiceProvider serviceProvider, Stream fileStream, int levelIndex)
+        public Level(Microsoft.Xna.Framework.Game game,SpriteBatch spriteBatch,IServiceProvider serviceProvider, Stream fileStream, int levelIndex)
         {
+            this.game = game;
+            this.spriteBatch = spriteBatch;
+
             Content = new ContentManager(serviceProvider, "Content");
 
             LoadTiles(fileStream);
+            
 
-            exitReachedSound = Content.Load<SoundEffect>("Sounds/forest");
+            exitReachedSound = Content.Load<Song>("Sprites/Sounds/forest");
         }
 
         //################################################################################################################################################################//
+
+        
+
+
+        public void PlayMusic()
+        {
+            //Musique d'ambiance du niveau
+            try
+            {
+                MediaPlayer.IsRepeating = true;
+                MediaPlayer.Play(Content.Load<Song>("Sprites/Sounds/dungeon"));
+                MediaPlayer.Volume = (float)0.3;
+            }
+            catch { }
+        }
+
 
         #region LoadTiles
 
@@ -147,7 +170,7 @@ namespace NexusDungeon.Core.Game
                 throw new NotSupportedException("A level may only have one starting point.");
 
             start = RectangleUtils.GetBottomCenter(GetBounds(x, y));
-            //Player = new Player(this, start);
+            Player = new Player(this.game,this.spriteBatch,this, start);
 
             return new Tile(Content.Load<Texture2D>("Sprites/depart"), TileCollision.Passable);
         }
@@ -306,6 +329,8 @@ namespace NexusDungeon.Core.Game
 
             foreach (Enemy enemy in enemies)
                 enemy.Draw(gameTime);
+
+            
 
             //for (int i = EntityLayer + 1; i < layers.Length; ++i)
                 //spriteBatch.Draw(layers[i], Vector2.Zero, Color.White);
