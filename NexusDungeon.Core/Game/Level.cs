@@ -14,6 +14,9 @@ namespace NexusDungeon.Core.Game
     {
         //Structure
         private Tile[,] tiles;
+        private Matrix globalTransformation;
+        int backbufferWidth, backbufferHeight;
+        Vector2 baseScreenSize = new Vector2(1024, 576);
 
         //Entités dans le niveau
         public Player Player { get; set; }
@@ -230,7 +233,12 @@ namespace NexusDungeon.Core.Game
             
             if (!ReachedExit)
             {
-                
+                if (backbufferHeight != game.GraphicsDevice.PresentationParameters.BackBufferHeight ||
+                backbufferWidth != game.GraphicsDevice.PresentationParameters.BackBufferWidth)
+                {
+                    ScalePresentationArea();
+                }
+
                 Player.Update(gameTime);
                 
 
@@ -315,6 +323,8 @@ namespace NexusDungeon.Core.Game
         /// </summary>
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
+            spriteBatch.End();
+            spriteBatch.Begin(SpriteSortMode.Immediate, null, null, null, null, null, globalTransformation);
             //for (int i = 0; i <= EntityLayer; ++i)
                 //spriteBatch.Draw(layers[i], Vector2.Zero, Color.White);
 
@@ -330,10 +340,23 @@ namespace NexusDungeon.Core.Game
             foreach (Enemy enemy in enemies)
                 enemy.Draw(gameTime);
 
-            
+
 
             //for (int i = EntityLayer + 1; i < layers.Length; ++i)
-                //spriteBatch.Draw(layers[i], Vector2.Zero, Color.White);
+            //spriteBatch.Draw(layers[i], Vector2.Zero, Color.White);
+            
+        }
+
+        public void ScalePresentationArea()
+        {
+            //Work out how much we need to scale our graphics to fill the screen
+            backbufferWidth = game.GraphicsDevice.PresentationParameters.BackBufferWidth;
+            backbufferHeight = game.GraphicsDevice.PresentationParameters.BackBufferHeight;
+            float horScaling = backbufferWidth / baseScreenSize.X;
+            float verScaling = backbufferHeight / baseScreenSize.Y;
+            Vector3 screenScalingFactor = new Vector3(horScaling, verScaling, 1);
+            globalTransformation = Matrix.CreateScale(screenScalingFactor);
+            System.Diagnostics.Debug.WriteLine("Screen Size - Width[" + game.GraphicsDevice.PresentationParameters.BackBufferWidth + "] Height [" + game.GraphicsDevice.PresentationParameters.BackBufferHeight + "]");
         }
 
         /// <summary>

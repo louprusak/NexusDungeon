@@ -14,7 +14,7 @@ namespace NexusDungeon.Core
         private SpriteBatch _spriteBatch;
         private Matrix globalTransformation;
         int backbufferWidth, backbufferHeight;
-        Vector2 baseScreenSize = new Vector2(400, 400);
+        Vector2 baseScreenSize = new Vector2(1024, 576);
         private int levelIndex = -1;
         private const int numberOfLevels = 1;
         private Level level;
@@ -34,6 +34,7 @@ namespace NexusDungeon.Core
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
+            _graphics.IsFullScreen = true;
         }
 
         //################################################################################################################################################################//
@@ -42,9 +43,9 @@ namespace NexusDungeon.Core
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
-            _graphics.PreferredBackBufferHeight = 1080;
-            _graphics.PreferredBackBufferWidth= 1920;
-            _graphics.ApplyChanges();
+            //_graphics.PreferredBackBufferHeight = 1080;
+            //_graphics.PreferredBackBufferWidth= 1920;
+            //_graphics.ApplyChanges();
 
             base.Initialize();
             _spriteBatch = new SpriteBatch(graphicsDevice: GraphicsDevice);
@@ -87,6 +88,12 @@ namespace NexusDungeon.Core
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
+            if (backbufferHeight != GraphicsDevice.PresentationParameters.BackBufferHeight ||
+                backbufferWidth != GraphicsDevice.PresentationParameters.BackBufferWidth)
+            {
+                ScalePresentationArea();
+            }
+
             // TODO: Add your update logic here
 
             base.Update(gameTime);
@@ -102,25 +109,31 @@ namespace NexusDungeon.Core
 
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.White);
-            _spriteBatch.Begin();
-
 
             if (onLevel)
             {
+                GraphicsDevice.Clear(Color.White);
+                _spriteBatch.Begin(SpriteSortMode.Immediate, null, null, null, null, null, globalTransformation);
                 level.Draw(gameTime, _spriteBatch);
                 MediaPlayer.Play(Content.Load<Song>("Sprites/Sounds/dungeon"));
+                _spriteBatch.End();
             }
             else
             {
-                _spriteBatch.Draw(_background, new Rectangle(0, 0, Window.ClientBounds.Width, Window.ClientBounds.Height), Color.White);
+                GraphicsDevice.Clear(Color.White);
+               
+                _spriteBatch.Begin(SpriteSortMode.Immediate, null, null, null, null, null, globalTransformation);
+                _spriteBatch.Draw(_background, Vector2.Zero, Color.White);
+                _spriteBatch.End();
+                _spriteBatch.Begin();
                 foreach (var gameObject in GameObjects)
                 {
                     gameObject.Draw(gameTime);
                 }
+                _spriteBatch.End();
             }
             
-            _spriteBatch.End();
+            
 
             base.Draw(gameTime);
         }
