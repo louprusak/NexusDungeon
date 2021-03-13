@@ -10,50 +10,44 @@ namespace NexusDungeon.Core
 {
     public class NexusDungeonGame : Microsoft.Xna.Framework.Game
     {
+        //Eléments graphiques
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
         private Matrix globalTransformation;
         int backbufferWidth, backbufferHeight;
-        Vector2 baseScreenSize = new Vector2(1024, 576);
+        // 512/16 = 32 tuiles largeur et 288/16 = 18 tuiles en hauteur car les tuiles font du 16 par 16
+        Vector2 baseScreenSize = new Vector2(512, 288);
+
+        //Levels
         private int levelIndex = -1;
         private const int numberOfLevels = 1;
         private Level level;
-        private Texture2D _background;
         private bool onLevel = false;
 
+        //Hub
+        private Texture2D _background;
         private Color[] _colorBackground;
+        private KeyboardState keyboardState;
 
+        //Objets du jeu
         private Player Player { get; set; }
         public List<GameObject> GameObjects { get; set; } = new List<GameObject>();
 
         //################################################################################################################################################################//
-
+        //CONSTRUCTEUR
 
         public NexusDungeonGame()
         {
             _graphics = new GraphicsDeviceManager(this);
-            Content.RootDirectory = "Content";
-            IsMouseVisible = true;
             _graphics.IsFullScreen = true;
+            IsMouseVisible = true;
+            
         }
 
         //################################################################################################################################################################//
+        //METHODES MONOGAME
 
-
-        protected override void Initialize()
-        {
-            // TODO: Add your initialization logic here
-            //_graphics.PreferredBackBufferHeight = 1080;
-            //_graphics.PreferredBackBufferWidth= 1920;
-            //_graphics.ApplyChanges();
-
-            base.Initialize();
-            _spriteBatch = new SpriteBatch(graphicsDevice: GraphicsDevice);
-            Player = new Player(this, _spriteBatch);
-            GameObjects.Add(Player);
-
-            
-        }
+        
 
         protected override void LoadContent()
         {
@@ -62,49 +56,53 @@ namespace NexusDungeon.Core
             _spriteBatch = new SpriteBatch(GraphicsDevice);
             
             _background = Content.Load<Texture2D>("Sprites/hub");
-            //_background = Content.Load<Texture2D>("Sprites/level");
+
             _colorBackground = new Color[_background.Width * _background.Height];
             _background.GetData<Color>(_colorBackground);
 
 
             ScalePresentationArea();
 
+            Player = new Player(this, _spriteBatch);
+
             //Musique d'ambiance du niveau
             try
             {
                 MediaPlayer.IsRepeating = true;
                 MediaPlayer.Play(Content.Load<Song>("Sprites/Sounds/forest"));
-                MediaPlayer.Volume = (float) 0.3 ;
+                MediaPlayer.Volume = (float)0.3;
             }
             catch { }
-
-
-            LoadNextLevel();
 
         }
 
         protected override void Update(GameTime gameTime)
         {
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
+            //Check sortie du jeu
+            if (Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
+            //Check redimensionnement de la fenêtre graphique
             if (backbufferHeight != GraphicsDevice.PresentationParameters.BackBufferHeight ||
                 backbufferWidth != GraphicsDevice.PresentationParameters.BackBufferWidth)
             {
                 ScalePresentationArea();
             }
 
-            // TODO: Add your update logic here
+            keyboardState = Keyboard.GetState();
 
-            base.Update(gameTime);
-
-            foreach(var gameObject in GameObjects)
+            if (onLevel)
             {
-                gameObject.Update(gameTime);
+                level.Update(gameTime,keyboardState);
             }
-            Player.Update(gameTime);
-            if (CanMove((int)Player.NextPosition.X, (int)Player.NextPosition.Y))
-                Player.Position = Player.NextPosition;
+            else
+            {
+                Player.Update(gameTime,keyboardState);
+                if (CanMove((int)Player.NextPosition.X, (int)Player.NextPosition.Y))
+                    Player.Position = Player.NextPosition;
+            }
+            
+            base.Update(gameTime);
         }
 
         protected override void Draw(GameTime gameTime)
@@ -114,30 +112,25 @@ namespace NexusDungeon.Core
             {
                 GraphicsDevice.Clear(Color.White);
                 _spriteBatch.Begin(SpriteSortMode.Immediate, null, null, null, null, null, globalTransformation);
-                level.Draw(gameTime, _spriteBatch);
-                MediaPlayer.Play(Content.Load<Song>("Sprites/Sounds/dungeon"));
-                _spriteBatch.End();
+                level.Draw(gameTime, _spriteBatch); 
             }
             else
             {
                 GraphicsDevice.Clear(Color.White);
-               
                 _spriteBatch.Begin(SpriteSortMode.Immediate, null, null, null, null, null, globalTransformation);
                 _spriteBatch.Draw(_background, Vector2.Zero, Color.White);
                 _spriteBatch.End();
                 _spriteBatch.Begin();
-                foreach (var gameObject in GameObjects)
-                {
-                    gameObject.Draw(gameTime);
-                }
-                _spriteBatch.End();
+                Player.Draw(gameTime, _spriteBatch);
             }
-            
-            
 
             base.Draw(gameTime);
+            _spriteBatch.End();
         }
 
+
+        //################################################################################################################################################################//
+        //METHODES
 
         private Color GetColorAt(int x, int y)
         {

@@ -1,15 +1,12 @@
 ﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace NexusDungeon.Core.Game
 {
-    class Player : GameObject
+    class Player
     {
         // Animations
         private Animation _idle_Animation;
@@ -27,7 +24,7 @@ namespace NexusDungeon.Core.Game
         //Sounds
         private Song _walk_sound;
 
-        //Bounds
+        //Bordures et collisions
         private Rectangle localBounds;
         public Rectangle BoundingRectangle
         {
@@ -55,8 +52,12 @@ namespace NexusDungeon.Core.Game
         public SpriteBatch spriteBatch;
 
 
+
+        //################################################################################################################################################################//
         //Constructeur
-        public Player(Microsoft.Xna.Framework.Game game, SpriteBatch spriteBatch) : base(game, spriteBatch)
+
+
+        public Player(Microsoft.Xna.Framework.Game game, SpriteBatch spriteBatch)
         {
             this.game = game;
             this.spriteBatch = spriteBatch;
@@ -65,7 +66,7 @@ namespace NexusDungeon.Core.Game
             Reset(game);
         }
 
-        public Player(Microsoft.Xna.Framework.Game game, SpriteBatch spriteBatch,Level level, Vector2 position) : base(game, spriteBatch)
+        public Player(Level level, Vector2 position)
         {
             this.Level = level;
 
@@ -74,35 +75,60 @@ namespace NexusDungeon.Core.Game
             Reset(position);
         }
 
-        //Méthodes Monogame
-        public override void Initialize()
+
+
+        //################################################################################################################################################################//
+        //METHODES
+
+
+        protected void LoadContent()
         {
-            base.Initialize();
+            
+
+            if (game != null)
+            {
+                _idle_Animation = new Animation(game.Content.Load<Texture2D>("Sprites/Player/idle"), 0.2f, true);
+                _walk_Top_Animation = new Animation(game.Content.Load<Texture2D>("Sprites/Player/top"), 0.06f, true);
+                _walk_Bot_Animation = new Animation(game.Content.Load<Texture2D>("Sprites/Player/bot"), 0.06f, true);
+                _walk_Left_Animation = new Animation(game.Content.Load<Texture2D>("Sprites/Player/left"), 0.06f, true);
+                _walk_Right_Animation = new Animation(game.Content.Load<Texture2D>("Sprites/Player/right"), 0.06f, true);
+                _attack_Right_Animation = new Animation(game.Content.Load<Texture2D>("Sprites/Player/attack_right"), 0.06f, true);
+                _attack_Left_Animation = new Animation(game.Content.Load<Texture2D>("Sprites/Player/attack_left"), 0.06f, true);
+                _attack_Top_Animation = new Animation(game.Content.Load<Texture2D>("Sprites/Player/attack_top"), 0.06f, true);
+                _attack_Bot_Animation = new Animation(game.Content.Load<Texture2D>("Sprites/Player/attack_bot"), 0.06f, true);
+            }
+           else if(Level != null)
+            {
+                _idle_Animation = new Animation(Level.Content.Load<Texture2D>("Sprites/Player/idle"), 0.2f, true);
+                _walk_Top_Animation = new Animation(Level.Content.Load<Texture2D>("Sprites/Player/top"), 0.06f, true);
+                _walk_Bot_Animation = new Animation(Level.Content.Load<Texture2D>("Sprites/Player/bot"), 0.06f, true);
+                _walk_Left_Animation = new Animation(Level.Content.Load<Texture2D>("Sprites/Player/left"), 0.06f, true);
+                _walk_Right_Animation = new Animation(Level.Content.Load<Texture2D>("Sprites/Player/right"), 0.06f, true);
+                _attack_Right_Animation = new Animation(Level.Content.Load<Texture2D>("Sprites/Player/attack_right"), 0.06f, true);
+                _attack_Left_Animation = new Animation(Level.Content.Load<Texture2D>("Sprites/Player/attack_left"), 0.06f, true);
+                _attack_Top_Animation = new Animation(Level.Content.Load<Texture2D>("Sprites/Player/attack_top"), 0.06f, true);
+                _attack_Bot_Animation = new Animation(Level.Content.Load<Texture2D>("Sprites/Player/attack_bot"), 0.06f, true);
+            }
+            else
+            {
+                throw new NotSupportedException("Un player doit avoir un contexte. Soit un game, soit un level.");
+            }
+
+            // Calculate bounds within texture size.            
+            int width = (int)(_idle_Animation.FrameWidth * 0.4); // ???
+            int left = (_idle_Animation.FrameWidth - width) / 2;
+            int height = (int)(_idle_Animation.FrameHeight * 0.8);
+            int top = _idle_Animation.FrameHeight - height;
+            localBounds = new Rectangle(left, top, width, height);
+
         }
 
-        protected override void LoadContent()
+        public void Update(GameTime gameTime, KeyboardState keyboardState)
         {
-            base.LoadContent();
-
-            _idle_Animation = new Animation(Game.Content.Load<Texture2D>("Sprites/Player/idle"), 0.2f,true);
-            _walk_Top_Animation = new Animation(Game.Content.Load<Texture2D>("Sprites/Player/top"), 0.06f, true);
-            _walk_Bot_Animation = new Animation(Game.Content.Load<Texture2D>("Sprites/Player/bot"), 0.06f, true);
-            _walk_Left_Animation = new Animation(Game.Content.Load<Texture2D>("Sprites/Player/left"), 0.06f, true);
-            _walk_Right_Animation = new Animation(Game.Content.Load<Texture2D>("Sprites/Player/right"), 0.06f, true);
-            _attack_Right_Animation = new Animation(Game.Content.Load<Texture2D>("Sprites/Player/attack_right"), 0.06f, true);
-            _attack_Left_Animation = new Animation(Game.Content.Load<Texture2D>("Sprites/Player/attack_left"), 0.06f, true);
-            _attack_Top_Animation = new Animation(Game.Content.Load<Texture2D>("Sprites/Player/attack_top"), 0.06f, true);
-            _attack_Bot_Animation = new Animation(Game.Content.Load<Texture2D>("Sprites/Player/attack_bot"), 0.06f, true);
-
-            _walk_sound = Game.Content.Load<Song>("Sprites/Sounds/footsteps");
-           
-        }
-
-        public override void Update(GameTime gameTime)
-        {
-            base.Update(gameTime);
+            
             NextPosition = Position;
-            var keyboardState = Keyboard.GetState();
+            
+            
             if (keyboardState.GetPressedKeyCount() == 0)
             {
                 animationPlayer.PlayAnimation(_idle_Animation);
@@ -110,12 +136,12 @@ namespace NexusDungeon.Core.Game
             }
             else
             {
-                if (keyboardState.IsKeyDown(Keys.P))                                        //Si le joueur appuie sur la touche p il lance les niveaux
+                if (keyboardState.IsKeyDown(Keys.P) && Level == null)                                        //Si le joueur appuie sur la touche p il lance les niveaux
                 {
                     NexusDungeonGame tmpgame = (NexusDungeonGame)game;
                     tmpgame.PlayLevel();
                 }
-                if (keyboardState.IsKeyDown(Keys.Left))
+                if (keyboardState.IsKeyDown(Keys.Left) || keyboardState.IsKeyDown(Keys.Q))
                 {
                     NextPosition = Vector2.Add(Position, new Vector2(-(_speed), 0));
                     animationPlayer.PlayAnimation(_walk_Left_Animation);
@@ -124,7 +150,7 @@ namespace NexusDungeon.Core.Game
                         animationPlayer.PlayAnimation(_attack_Left_Animation);
                     }
                 }
-                if (keyboardState.IsKeyDown(Keys.Right))
+                if (keyboardState.IsKeyDown(Keys.Right) || keyboardState.IsKeyDown(Keys.D))
                 {
                     NextPosition = Vector2.Add(Position, new Vector2(_speed, 0));
                     animationPlayer.PlayAnimation(_walk_Right_Animation);
@@ -133,7 +159,7 @@ namespace NexusDungeon.Core.Game
                         animationPlayer.PlayAnimation(_attack_Right_Animation);
                     }
                 }
-                if (keyboardState.IsKeyDown(Keys.Up))
+                if (keyboardState.IsKeyDown(Keys.Up) || keyboardState.IsKeyDown(Keys.Z))
                 {
                     NextPosition = Vector2.Add(Position, new Vector2(0, -(_speed)));
                     animationPlayer.PlayAnimation(_walk_Top_Animation);
@@ -142,7 +168,7 @@ namespace NexusDungeon.Core.Game
                         animationPlayer.PlayAnimation(_attack_Top_Animation);
                     }
                 }
-                if (keyboardState.IsKeyDown(Keys.Down))
+                if (keyboardState.IsKeyDown(Keys.Down) || keyboardState.IsKeyDown(Keys.S))
                 {
                     NextPosition = Vector2.Add(Position, new Vector2(0, (_speed)));
                     animationPlayer.PlayAnimation(_walk_Bot_Animation);
@@ -158,11 +184,11 @@ namespace NexusDungeon.Core.Game
 
         
 
-        public override void Draw(GameTime gameTime)
+        public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
-            base.Draw(gameTime);
-            
-            animationPlayer.Draw(gameTime, _spriteBatch, Position, flip);
+            spriteBatch.End();
+            spriteBatch.Begin();
+            animationPlayer.Draw(gameTime, spriteBatch, Position, flip);
         }
 
         /// <summary>
@@ -187,9 +213,6 @@ namespace NexusDungeon.Core.Game
             animationPlayer.PlayAnimation(_idle_Animation);
         }
 
-        public static implicit operator PlayerIndex(Player v)
-        {
-            throw new NotImplementedException();
-        }
+        
     }
 }

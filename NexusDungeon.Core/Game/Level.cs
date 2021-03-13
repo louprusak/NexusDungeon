@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
 using System;
 using System.Collections.Generic;
@@ -16,7 +17,7 @@ namespace NexusDungeon.Core.Game
         private Tile[,] tiles;
         private Matrix globalTransformation;
         int backbufferWidth, backbufferHeight;
-        Vector2 baseScreenSize = new Vector2(1024, 576);
+        Vector2 baseScreenSize = new Vector2(512, 288);
 
         //Entités dans le niveau
         public Player Player { get; set; }
@@ -49,7 +50,6 @@ namespace NexusDungeon.Core.Game
         }
 
         //################################################################################################################################################################//
-
         //Constructeur
         public Level(Microsoft.Xna.Framework.Game game,SpriteBatch spriteBatch,IServiceProvider serviceProvider, Stream fileStream, int levelIndex)
         {
@@ -58,34 +58,25 @@ namespace NexusDungeon.Core.Game
 
             Content = new ContentManager(serviceProvider, "Content");
 
+            ScalePresentationArea();
+
             LoadTiles(fileStream);
             
+
 
             exitReachedSound = Content.Load<Song>("Sprites/Sounds/forest");
         }
 
         //################################################################################################################################################################//
-
+        //METHODES DE CHARGEMENT
         
-
-
-        public void PlayMusic()
-        {
-            //Musique d'ambiance du niveau
-            try
-            {
-                MediaPlayer.IsRepeating = true;
-                MediaPlayer.Play(Content.Load<Song>("Sprites/Sounds/dungeon"));
-                MediaPlayer.Volume = (float)0.3;
-            }
-            catch { }
-        }
-
-
-        #region LoadTiles
-
         private void LoadTiles(Stream fileStream)
         {
+            backbufferWidth = game.GraphicsDevice.PresentationParameters.BackBufferWidth;
+            backbufferHeight = game.GraphicsDevice.PresentationParameters.BackBufferHeight;
+            float horScaling = backbufferWidth / baseScreenSize.X;
+            float verScaling = backbufferHeight / baseScreenSize.Y;
+
             // Load the level and ensure all of the lines are the same length.
             int width;
             List<string> lines = new List<string>();
@@ -112,7 +103,7 @@ namespace NexusDungeon.Core.Game
                 {
                     // to load each tile.
                     char tileType = lines[y][x];
-                    tiles[x, y] = LoadTile(tileType, x, y);
+                    tiles[x, y] = LoadTile(tileType, (int)(x*horScaling), (int)(y*verScaling));
                 }
             }
 
@@ -123,6 +114,13 @@ namespace NexusDungeon.Core.Game
                 throw new NotSupportedException("A level must have an exit.");
         }
 
+        /// <summary>
+        /// Charge une tuile de texture en fonction du caractère rencontré dans le fichier texte et la position
+        /// </summary>
+        /// <param name="tileType">Type de tuile de texture</param>
+        /// <param name="x">Position en largeur</param>
+        /// <param name="y">Position en hauteur</param>
+        /// <returns>Retourne l'objet Tile créée dans certains cas</returns>
         private Tile LoadTile(char tileType, int x, int y)
         {
             switch (tileType)
@@ -157,6 +155,12 @@ namespace NexusDungeon.Core.Game
             }
         }
 
+        /// <summary>
+        /// Chargement de la tuile de sortie du level
+        /// </summary>
+        /// <param name="x">Position en largeur</param>
+        /// <param name="y">Position en hauteur</param>
+        /// <returns>Instance de la tuile</returns>
         private Tile LoadExitTile(int x, int y)
         {
             if (exit != InvalidPosition)
@@ -167,28 +171,38 @@ namespace NexusDungeon.Core.Game
             return new Tile(Content.Load<Texture2D>("Sprites/sortie"), TileCollision.Passable);
         }
 
+        /// <summary>
+        /// Chargement de la tuile d'entrée du level
+        /// </summary>
+        /// <param name="x">Position en largeur</param>
+        /// <param name="y">Position en heuteur</param>
+        /// <returns>Instance de la tuile</returns>
         private Tile LoadStartTile(int x, int y)
         {
             if (Player != null)
                 throw new NotSupportedException("A level may only have one starting point.");
 
             start = RectangleUtils.GetBottomCenter(GetBounds(x, y));
-            Player = new Player(this.game,this.spriteBatch,this, start);
+            Player = new Player(this, start);
 
             return new Tile(Content.Load<Texture2D>("Sprites/depart"), TileCollision.Passable);
         }
 
-
+        /// <summary>
+        /// Déchargement de l'ancien level
+        /// </summary>
         public void Dispose()
         {
             Content.Unload();
         }
 
-        #endregion
+
+
 
         //################################################################################################################################################################//
+        //METHODES GERANT LES COLLISIONS
 
-        #region Bounds and collision
+
 
         /// <summary>
         /// Gets the collision mode of the tile at a particular location.
@@ -218,28 +232,24 @@ namespace NexusDungeon.Core.Game
 
 
 
-        #endregion
 
         //################################################################################################################################################################//
+        //METHODE DE MISE A JOUR DES LEVELS ET LEURS ELEMENTS
+    
 
-        #region Update
 
         /// <summary>
         /// Updates all objects in the world, performs collision between them,
         /// and handles the time limit with scoring.
         /// </summary>
-        public void Update(GameTime gameTime)
+        public void Update(GameTime gameTime, KeyboardState keyboardState)
         {
             
             if (!ReachedExit)
             {
-                if (backbufferHeight != game.GraphicsDevice.PresentationParameters.BackBufferHeight ||
-                backbufferWidth != game.GraphicsDevice.PresentationParameters.BackBufferWidth)
-                {
-                    ScalePresentationArea();
-                }
+                ScalePresentationArea();
 
-                Player.Update(gameTime);
+                Player.Update(gameTime,keyboardState);
                 
 
                 // Falling off the bottom of the level kills the player.
@@ -312,39 +322,44 @@ namespace NexusDungeon.Core.Game
             Player.Reset(start);
         }
 
-        #endregion
+
+
+
 
         //################################################################################################################################################################//
+        //METHODES D'AFFICHAGE DES ELEMENTS
 
-        #region Draw
+
+
 
         /// <summary>
         /// Draw everything in the level from background to foreground.
         /// </summary>
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
-            spriteBatch.End();
-            spriteBatch.Begin(SpriteSortMode.Immediate, null, null, null, null, null, globalTransformation);
+            //spriteBatch.End();
+            //spriteBatch.Begin(SpriteSortMode.Immediate, null, null, null, null, null, globalTransformation);
             //for (int i = 0; i <= EntityLayer; ++i)
                 //spriteBatch.Draw(layers[i], Vector2.Zero, Color.White);
 
             DrawTiles(spriteBatch);
 
             //foreach (Gem gem in gems)
-                //gem.Draw(gameTime, spriteBatch);
-
-            Player.Draw(gameTime
-                //, spriteBatch
-                );
+            //gem.Draw(gameTime, spriteBatch);
+            //spriteBatch.End();
+            //spriteBatch.Begin();
+            Player.Draw(gameTime, spriteBatch);
+            
+            
 
             foreach (Enemy enemy in enemies)
                 enemy.Draw(gameTime);
 
-
+            
 
             //for (int i = EntityLayer + 1; i < layers.Length; ++i)
             //spriteBatch.Draw(layers[i], Vector2.Zero, Color.White);
-            
+
         }
 
         public void ScalePresentationArea()
@@ -380,13 +395,6 @@ namespace NexusDungeon.Core.Game
                 }
             }
         }
-
-        #endregion
-
-
-
-
-
 
     }
 }
