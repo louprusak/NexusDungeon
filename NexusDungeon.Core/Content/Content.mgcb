@@ -104,7 +104,7 @@
 /processorParam:TextureFormat=Color
 /build:Sprites/Overlays/exitgame.png
 
-#begin Sprites/Overlays/exitgame.psd
+#begin Sprites/Overlays/nexusdungeon.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -114,7 +114,19 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Sprites/Overlays/exitgame.psd
+/build:Sprites/Overlays/nexusdungeon.png
+
+#begin Sprites/Overlays/winlevel.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Sprites/Overlays/winlevel.png
 
 #begin Sprites/Player/attack_bot.png
 /importer:TextureImporter

@@ -172,7 +172,7 @@ namespace NexusDungeon.Core.Game
                         animationPlayer.PlayAnimation(_attack_Bot_Animation);
                     }
                 }
-
+                Position = NextPosition;
             }
 
         }

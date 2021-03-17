@@ -32,6 +32,7 @@ namespace NexusDungeon.Core
         //Overlays
         private Texture2D _exitOverlay;
         private Texture2D _playLevelOverlay;
+        private Texture2D _nexusdungeon;
 
         //Objets du jeu
         private Player Player { get; set; }
@@ -66,6 +67,7 @@ namespace NexusDungeon.Core
 
             _exitOverlay = Content.Load<Texture2D>("Sprites/Overlays/exitgame");
             _playLevelOverlay = Content.Load<Texture2D>("Sprites/Overlays/enterdungeon");
+            _nexusdungeon = Content.Load<Texture2D>("Sprites/Overlays/nexusdungeon");
 
             ScalePresentationArea();
 
@@ -127,6 +129,7 @@ namespace NexusDungeon.Core
                 GraphicsDevice.Clear(Color.White);
                 _spriteBatch.Begin(SpriteSortMode.Immediate, null, SamplerState.PointClamp, null, null, null, globalTransformation);
                 _spriteBatch.Draw(_background, Vector2.Zero, Color.White);
+                _spriteBatch.Draw(_nexusdungeon, new Vector2(10,10), Color.White);
                 if (Player.Position.X < 100 && Player.Position.Y <= 800 && Player.Position.Y >= 700)
                 {
                     exit();

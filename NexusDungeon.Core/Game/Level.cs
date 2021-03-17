@@ -358,7 +358,7 @@ namespace NexusDungeon.Core.Game
             spriteBatch.End();
             spriteBatch.Begin(SpriteSortMode.Immediate, null, SamplerState.PointClamp, null, null, null, null);
             Player.Draw(gameTime, spriteBatch);
-            spriteBatch.DrawString(Content.Load<SpriteFont>("Sprites/Font/Hud"), "Level "+ ((NexusDungeonGame)game).levelIndex, Vector2.One, Color.White);
+            spriteBatch.DrawString(Content.Load<SpriteFont>("Sprites/Font/Hud"), "Level "+ ((NexusDungeonGame)game).levelIndex+"\nVies : 5", Vector2.One, Color.White);
 
 
             foreach (Enemy enemy in enemies)
