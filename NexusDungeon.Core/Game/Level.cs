@@ -33,6 +33,9 @@ namespace NexusDungeon.Core.Game
         private Song exitReachedSound;
         private SoundEffect chestSound;
 
+        //Font
+        private SpriteFont hudFont;
+
         //Propriétés du Level
         public bool ReachedExit { get; set; }
         private Microsoft.Xna.Framework.Game game;
@@ -61,6 +64,9 @@ namespace NexusDungeon.Core.Game
             ScalePresentationArea();
 
             LoadTiles(fileStream);
+
+            MediaPlayer.Play(game.Content.Load<Song>("Sprites/Sounds/dungeon"));
+            MediaPlayer.MoveNext();
             
 
 
@@ -338,7 +344,7 @@ namespace NexusDungeon.Core.Game
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
             //spriteBatch.End();
-            //spriteBatch.Begin(SpriteSortMode.Immediate, null, null, null, null, null, globalTransformation);
+            //spriteBatch.Begin(SpriteSortMode.Immediate, null, SamplerState.PointClamp, null, null, null, globalTransformation);
             //for (int i = 0; i <= EntityLayer; ++i)
                 //spriteBatch.Draw(layers[i], Vector2.Zero, Color.White);
 
@@ -348,9 +354,12 @@ namespace NexusDungeon.Core.Game
             //gem.Draw(gameTime, spriteBatch);
             //spriteBatch.End();
             //spriteBatch.Begin();
+            //spriteBatch.Begin(SpriteSortMode.Immediate, null, SamplerState.PointClamp, null, null, null, globalTransformation);
+            spriteBatch.End();
+            spriteBatch.Begin(SpriteSortMode.Immediate, null, SamplerState.PointClamp, null, null, null, null);
             Player.Draw(gameTime, spriteBatch);
-            
-            
+            spriteBatch.DrawString(Content.Load<SpriteFont>("Sprites/Font/Hud"), "Level "+ ((NexusDungeonGame)game).levelIndex, Vector2.One, Color.White);
+
 
             foreach (Enemy enemy in enemies)
                 enemy.Draw(gameTime);

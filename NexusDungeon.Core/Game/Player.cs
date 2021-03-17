@@ -43,10 +43,7 @@ namespace NexusDungeon.Core.Game
 
         //Stats
         public float _speed;
-        public Level Level
-        {
-            get;
-        }
+        public Level Level = null;
         public Microsoft.Xna.Framework.Game game;
         
         public SpriteBatch spriteBatch;
@@ -127,20 +124,18 @@ namespace NexusDungeon.Core.Game
         {
             
             NextPosition = Position;
+
+            System.Diagnostics.Debug.WriteLine("Position - X = "+ Position.X + " | Y= "+Position.Y);
+
             
-            
+
             if (keyboardState.GetPressedKeyCount() == 0)
             {
                 animationPlayer.PlayAnimation(_idle_Animation);
-                
             }
             else
             {
-                if (keyboardState.IsKeyDown(Keys.P) && Level == null)                                        //Si le joueur appuie sur la touche p il lance les niveaux
-                {
-                    NexusDungeonGame tmpgame = (NexusDungeonGame)game;
-                    tmpgame.PlayLevel();
-                }
+                
                 if (keyboardState.IsKeyDown(Keys.Left) || keyboardState.IsKeyDown(Keys.Q))
                 {
                     NextPosition = Vector2.Add(Position, new Vector2(-(_speed), 0));
@@ -186,8 +181,6 @@ namespace NexusDungeon.Core.Game
 
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
-            spriteBatch.End();
-            spriteBatch.Begin();
             animationPlayer.Draw(gameTime, spriteBatch, Position, flip);
         }
 
@@ -199,9 +192,11 @@ namespace NexusDungeon.Core.Game
         {
             animationPlayer.PlayAnimation(_idle_Animation);
 
-            int tmpx = game.Window.ClientBounds.Width / 2;
-            int tmpy = game.Window.ClientBounds.Height / 2;
-            Position = new Vector2(tmpx, tmpy);
+            //int tmpx = game.Window.ClientBounds.Width / 2;
+            //int tmpy = game.Window.ClientBounds.Height / 2;
+            //Position = new Vector2(tmpx, tmpy);
+            Position = new Vector2(1256, 436);
+            
 
             _speed = 5;
         }

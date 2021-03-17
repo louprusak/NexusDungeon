@@ -19,7 +19,7 @@ namespace NexusDungeon.Core
         Vector2 baseScreenSize = new Vector2(512, 288);
 
         //Levels
-        private int levelIndex = -1;
+        public int levelIndex = -1;
         private const int numberOfLevels = 1;
         private Level level;
         private bool onLevel = false;
@@ -28,6 +28,10 @@ namespace NexusDungeon.Core
         private Texture2D _background;
         private Color[] _colorBackground;
         private KeyboardState keyboardState;
+
+        //Overlays
+        private Texture2D _exitOverlay;
+        private Texture2D _playLevelOverlay;
 
         //Objets du jeu
         private Player Player { get; set; }
@@ -60,6 +64,8 @@ namespace NexusDungeon.Core
             _colorBackground = new Color[_background.Width * _background.Height];
             _background.GetData<Color>(_colorBackground);
 
+            _exitOverlay = Content.Load<Texture2D>("Sprites/Overlays/exitgame");
+            _playLevelOverlay = Content.Load<Texture2D>("Sprites/Overlays/enterdungeon");
 
             ScalePresentationArea();
 
@@ -98,6 +104,7 @@ namespace NexusDungeon.Core
             else
             {
                 Player.Update(gameTime,keyboardState);
+                
                 if (CanMove((int)Player.NextPosition.X, (int)Player.NextPosition.Y))
                     Player.Position = Player.NextPosition;
             }
@@ -111,21 +118,31 @@ namespace NexusDungeon.Core
             if (onLevel)
             {
                 GraphicsDevice.Clear(Color.White);
-                _spriteBatch.Begin(SpriteSortMode.Immediate, null, null, null, null, null, globalTransformation);
-                level.Draw(gameTime, _spriteBatch); 
+                _spriteBatch.Begin(SpriteSortMode.Immediate, null, SamplerState.PointClamp, null, null, null, globalTransformation);
+                level.Draw(gameTime, _spriteBatch);
+                _spriteBatch.End();
             }
             else
             {
                 GraphicsDevice.Clear(Color.White);
-                _spriteBatch.Begin(SpriteSortMode.Immediate, null, null, null, null, null, globalTransformation);
+                _spriteBatch.Begin(SpriteSortMode.Immediate, null, SamplerState.PointClamp, null, null, null, globalTransformation);
                 _spriteBatch.Draw(_background, Vector2.Zero, Color.White);
+                if (Player.Position.X < 100 && Player.Position.Y <= 800 && Player.Position.Y >= 700)
+                {
+                    exit();
+                }
+                if (Player.Position.X <=900 && Player.Position.X >= 800 && Player.Position.Y >= 480 && Player.Position.Y <= 580)
+                {
+                    PlayLevel();
+                }
                 _spriteBatch.End();
-                _spriteBatch.Begin();
+                _spriteBatch.Begin(SpriteSortMode.Immediate,null,SamplerState.PointClamp,null,null,null,null);
                 Player.Draw(gameTime, _spriteBatch);
+                _spriteBatch.End();
             }
 
             base.Draw(gameTime);
-            _spriteBatch.End();
+            
         }
 
 
@@ -185,9 +202,29 @@ namespace NexusDungeon.Core
 
         public void PlayLevel()
         {
-            
-            LoadNextLevel();
-            onLevel = true;
+            Vector2 overlaySize = new Vector2(_playLevelOverlay.Width, _playLevelOverlay.Height);
+
+            _spriteBatch.Draw(_playLevelOverlay, getWindowCenter() - overlaySize / 2, Color.White);
+            if (Keyboard.GetState().IsKeyDown(Keys.Y))
+            {
+                LoadNextLevel();
+                onLevel = true;
+            }
+        }
+
+        public Vector2 getWindowCenter()
+        {
+            return new Vector2(baseScreenSize.X / 2, baseScreenSize.Y / 2);
+        }
+
+        public void exit()
+        {
+            Vector2 overlaySize = new Vector2(_exitOverlay.Width, _exitOverlay.Height);
+            _spriteBatch.Draw(_exitOverlay, getWindowCenter() - overlaySize / 2, Color.White);
+            if (Keyboard.GetState().IsKeyDown(Keys.Y))
+            {
+                Exit();
+            }
         }
     }
 }
