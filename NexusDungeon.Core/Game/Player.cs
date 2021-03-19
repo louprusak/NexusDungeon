@@ -172,7 +172,7 @@ namespace NexusDungeon.Core.Game
                         animationPlayer.PlayAnimation(_attack_Bot_Animation);
                     }
                 }
-                Position = NextPosition;
+                //Position = NextPosition;
             }
 
         }
@@ -195,7 +195,9 @@ namespace NexusDungeon.Core.Game
             //int tmpx = game.Window.ClientBounds.Width / 2;
             //int tmpy = game.Window.ClientBounds.Height / 2;
             //Position = new Vector2(tmpx, tmpy);
-            Position = new Vector2(1256, 436);
+            //Position = new Vector2(1256, 436);
+            Position = new Vector2(996, 716);
+            //Position = new Vector2(291, 251);
             
 
             _speed = 5;

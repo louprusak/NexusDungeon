@@ -61,15 +61,18 @@ namespace NexusDungeon.Core
             _spriteBatch = new SpriteBatch(GraphicsDevice);
             
             _background = Content.Load<Texture2D>("Sprites/hub");
+            //_background = Content.Load<Texture2D>("Sprites/hubtest");
 
-            _colorBackground = new Color[_background.Width * _background.Height];
-            _background.GetData<Color>(_colorBackground);
+            
 
             _exitOverlay = Content.Load<Texture2D>("Sprites/Overlays/exitgame");
             _playLevelOverlay = Content.Load<Texture2D>("Sprites/Overlays/enterdungeon");
             _nexusdungeon = Content.Load<Texture2D>("Sprites/Overlays/nexusdungeon");
 
             ScalePresentationArea();
+
+            _colorBackground = new Color[_background.Width * _background.Height];
+            _background.GetData<Color>(_colorBackground);
 
             Player = new Player(this, _spriteBatch);
 
@@ -102,13 +105,20 @@ namespace NexusDungeon.Core
             if (onLevel)
             {
                 level.Update(gameTime,keyboardState);
+                Player.Position = Player.NextPosition;
             }
             else
             {
+
+                
+
                 Player.Update(gameTime,keyboardState);
                 
-                if (CanMove((int)Player.NextPosition.X, (int)Player.NextPosition.Y))
+               if (CanMove((int)Player.NextPosition.X, (int)Player.NextPosition.Y))
+                {
                     Player.Position = Player.NextPosition;
+                }
+                    
             }
             
             base.Update(gameTime);
@@ -130,7 +140,7 @@ namespace NexusDungeon.Core
                 _spriteBatch.Begin(SpriteSortMode.Immediate, null, SamplerState.PointClamp, null, null, null, globalTransformation);
                 _spriteBatch.Draw(_background, Vector2.Zero, Color.White);
                 _spriteBatch.Draw(_nexusdungeon, new Vector2(10,10), Color.White);
-                if (Player.Position.X < 100 && Player.Position.Y <= 800 && Player.Position.Y >= 700)
+                if (Player.Position.X > 600 && Player.Position.X < 650 && Player.Position.Y <= 800 && Player.Position.Y >= 700)
                 {
                     exit();
                 }
@@ -165,15 +175,24 @@ namespace NexusDungeon.Core
 
         private bool CanMove(int x, int y)
         {
-            /*
-            if (GetColorAt(x, y) == Color.White)
+            
+            if (GetColorAt((int)(x/3.75), (int)(y/3.5)) == /*Color.Black*/ new Color(248,215,129,255)){
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+            
+            /*if (GetColorAt(x, y) == Color.White)
                return false;
+            
             if (GetColorAt(x, y) != _colorBackground[1024 + 200 * _background.Width])
                 return true;
             else
                 return false;
-            */
-            return true;
+            
+            return true;*/
         }
 
         public void ScalePresentationArea()
@@ -185,6 +204,7 @@ namespace NexusDungeon.Core
             float verScaling = backbufferHeight / baseScreenSize.Y;
             Vector3 screenScalingFactor = new Vector3(horScaling, verScaling, 1);
             globalTransformation = Matrix.CreateScale(screenScalingFactor);
+        
             System.Diagnostics.Debug.WriteLine("Screen Size - Width[" + GraphicsDevice.PresentationParameters.BackBufferWidth + "] Height [" + GraphicsDevice.PresentationParameters.BackBufferHeight + "]");
         }
 
