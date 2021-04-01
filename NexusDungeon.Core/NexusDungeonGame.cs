@@ -60,7 +60,7 @@ namespace NexusDungeon.Core
 
             _spriteBatch = new SpriteBatch(GraphicsDevice);
             
-            _background = Content.Load<Texture2D>("Sprites/hub");
+            _background = Content.Load<Texture2D>("Sprites/Hub");
             //_background = Content.Load<Texture2D>("Sprites/hubtest");
 
             
