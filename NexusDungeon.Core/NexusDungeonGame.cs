@@ -20,7 +20,7 @@ namespace NexusDungeon.Core
 
         //Levels
         public int levelIndex = -1;
-        private const int numberOfLevels = 1;
+        private const int numberOfLevels = 2;
         private Level level;
         private bool onLevel = false;
 
@@ -36,6 +36,9 @@ namespace NexusDungeon.Core
 
         //Objets du jeu
         private Player Player { get; set; }
+        private Player LevelPlayer { get; set; }
+
+        
         public List<GameObject> GameObjects { get; set; } = new List<GameObject>();
 
         //################################################################################################################################################################//
@@ -46,6 +49,7 @@ namespace NexusDungeon.Core
             _graphics = new GraphicsDeviceManager(this);
             _graphics.IsFullScreen = true;
             IsMouseVisible = true;
+            
             
         }
 
@@ -68,6 +72,7 @@ namespace NexusDungeon.Core
             _exitOverlay = Content.Load<Texture2D>("Sprites/Overlays/exitgame");
             _playLevelOverlay = Content.Load<Texture2D>("Sprites/Overlays/enterdungeon");
             _nexusdungeon = Content.Load<Texture2D>("Sprites/Overlays/nexusdungeon");
+            
 
             ScalePresentationArea();
 
@@ -104,24 +109,25 @@ namespace NexusDungeon.Core
 
             if (onLevel)
             {
+                System.Diagnostics.Debug.WriteLine("\n\nNOUS SOMMES DANS LE LEVEL");
                 level.Update(gameTime,keyboardState);
-                Player.Position = Player.NextPosition;
+                LevelPlayer.Update(gameTime, keyboardState);
+                LevelPlayer.Position = LevelPlayer.NextPosition;
+                System.Diagnostics.Debug.WriteLine("[level] POSITION APRES UPDATE "+ LevelPlayer.PositionLevel.X + "  :  " + LevelPlayer.PositionLevel.Y);
             }
             else
             {
-
-                
-
                 Player.Update(gameTime,keyboardState);
                 
                if (CanMove((int)Player.NextPosition.X, (int)Player.NextPosition.Y))
                 {
                     Player.Position = Player.NextPosition;
+                    System.Diagnostics.Debug.WriteLine("POSITION APRES UPDATE " + Player.Position.X + "  :  " + Player.Position.Y+"\n\n");
                 }
                     
             }
             
-            base.Update(gameTime);
+            //base.Update(gameTime);
         }
 
         protected override void Draw(GameTime gameTime)
@@ -211,16 +217,25 @@ namespace NexusDungeon.Core
         public void LoadNextLevel()
         {
             // move to the next level
-            levelIndex = (levelIndex + 1) % numberOfLevels;
+            levelIndex = (levelIndex + 1);// % numberOfLevels;
 
-            // Unloads the content for the current level before loading the next one.
-            if (level != null)
-                level.Dispose();
+            if (levelIndex > numberOfLevels-1)
+            {
+                onLevel = false;
+            }
+            else{
+                // Unloads the content for the current level before loading the next one.
+                if (level != null)
+                    level.Dispose();
 
-            // Load the level.
-            string levelPath = string.Format("Content/Sprites/Levels/level{0}.txt", levelIndex);
-            using (Stream fileStream = TitleContainer.OpenStream(levelPath))
-                level = new Level(this,_spriteBatch,Services, fileStream, levelIndex);
+                // Load the level.
+                string levelPath = string.Format("Content/Sprites/Levels/level{0}.txt", levelIndex);
+                using (Stream fileStream = TitleContainer.OpenStream(levelPath))
+                    level = new Level(this, _spriteBatch, Services, fileStream, levelIndex);
+            }
+                
+
+            
         }
 
         public void PlayLevel()
@@ -248,6 +263,12 @@ namespace NexusDungeon.Core
             {
                 Exit();
             }
+        }
+
+
+        public void setLevelPlayer(Player player)
+        {
+            this.LevelPlayer = player;
         }
     }
 }

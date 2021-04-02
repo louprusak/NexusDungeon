@@ -6,7 +6,7 @@ using System;
 
 namespace NexusDungeon.Core.Game
 {
-    class Player
+    public class Player
     {
         // Animations
         private Animation _idle_Animation;
@@ -39,7 +39,9 @@ namespace NexusDungeon.Core.Game
 
         //Position
         public Vector2 Position { get; set; }
+        public Vector2 PositionLevel { get; set; }
         public Vector2 NextPosition { get; set; }
+        public Vector2 NextPositionLevel { get; set; }
 
         //Stats
         public float _speed;
@@ -68,7 +70,8 @@ namespace NexusDungeon.Core.Game
             this.Level = level;
 
             LoadContent();
-
+            System.Diagnostics.Debug.WriteLine("Constructeur player level, position :"+ position);
+            
             Reset(position);
         }
 
@@ -122,40 +125,15 @@ namespace NexusDungeon.Core.Game
 
         public void Update(GameTime gameTime, KeyboardState keyboardState)
         {
-            if (keyboardState.GetPressedKeyCount() == 0)
+            if(Level == null)
             {
-                animationPlayer.PlayAnimation(_idle_Animation);
+                Position = DeplacementHub(keyboardState);
             }
-            else
-            {
-                System.Diagnostics.Debug.WriteLine("//DEBUT UPDATE// : Position - X = " + Position.X + " | Y= " + Position.Y);
-
-                if (keyboardState.IsKeyDown(Keys.Left) || keyboardState.IsKeyDown(Keys.Q))
-                {
-                    Position = Vector2.Add(Position, new Vector2(-(_speed), 0));
-                    animationPlayer.PlayAnimation(_walk_Left_Animation); 
-                }
-                if (keyboardState.IsKeyDown(Keys.Right) || keyboardState.IsKeyDown(Keys.D))
-                {
-                    Position = Vector2.Add(Position, new Vector2(_speed, 0));
-                    animationPlayer.PlayAnimation(_walk_Right_Animation);  
-                }
-                if (keyboardState.IsKeyDown(Keys.Up) || keyboardState.IsKeyDown(Keys.Z))
-                {
-                    Position = Vector2.Add(Position, new Vector2(0, -(_speed)));
-                    animationPlayer.PlayAnimation(_walk_Top_Animation);  
-                }
-                if (keyboardState.IsKeyDown(Keys.Down) || keyboardState.IsKeyDown(Keys.S))
-                {
-                    Position = Vector2.Add(Position, new Vector2(0, (_speed)));
-                    animationPlayer.PlayAnimation(_walk_Bot_Animation); 
-                }
-
-                if(Level != null)
-                    HandleCollisions();
-
-                System.Diagnostics.Debug.WriteLine("//FIN FIN FIN UPDATE// : Position - X = " + Position.X + " | Y= " + Position.Y);
+            else{
+                PositionLevel = DeplacementLevel(keyboardState);
             }
+
+            
 
         }
 
@@ -163,6 +141,96 @@ namespace NexusDungeon.Core.Game
                     {
                         animationPlayer.PlayAnimation(_attack_Left_Animation);
                     }*/
+
+        private Vector2 DeplacementHub(KeyboardState keyboardState)
+        {
+            
+
+            if (keyboardState.GetPressedKeyCount() == 0)
+            {
+                animationPlayer.PlayAnimation(_idle_Animation);
+                return Position;
+            }
+            else
+            {
+                Vector2 NextPositionTmp = Position;
+                System.Diagnostics.Debug.WriteLine("[hub] "+ this);
+                System.Diagnostics.Debug.WriteLine("[hub] //DEBUT UPDATE// : Position - X = " + Position.X + " | Y= " + Position.Y);
+
+                if (keyboardState.IsKeyDown(Keys.Left) || keyboardState.IsKeyDown(Keys.Q))
+                {
+                    NextPositionTmp = Vector2.Add(Position, new Vector2(-(_speed), 0));
+                    animationPlayer.PlayAnimation(_walk_Left_Animation);
+                }
+                if (keyboardState.IsKeyDown(Keys.Right) || keyboardState.IsKeyDown(Keys.D))
+                {
+                    NextPositionTmp = Vector2.Add(Position, new Vector2(_speed, 0));
+                    animationPlayer.PlayAnimation(_walk_Right_Animation);
+                }
+                if (keyboardState.IsKeyDown(Keys.Up) || keyboardState.IsKeyDown(Keys.Z))
+                {
+                    NextPositionTmp = Vector2.Add(Position, new Vector2(0, -(_speed)));
+                    animationPlayer.PlayAnimation(_walk_Top_Animation);
+                }
+                if (keyboardState.IsKeyDown(Keys.Down) || keyboardState.IsKeyDown(Keys.S))
+                {
+                    NextPositionTmp = Vector2.Add(Position, new Vector2(0, (_speed)));
+                    animationPlayer.PlayAnimation(_walk_Bot_Animation);
+                }
+
+                /*if (Level != null)
+                    HandleCollisions();*/
+
+                System.Diagnostics.Debug.WriteLine("[hub] //FIN UPDATE NEXT POSITION// : Position - X = " + NextPositionTmp.X + " | Y= " + NextPositionTmp.Y);
+                System.Diagnostics.Debug.WriteLine("[hub] //FIN UPDATE POSITION// : Position - X = " + Position.X + " | Y= " + Position.Y);
+                return NextPositionTmp;
+            }
+        }
+
+        private Vector2 DeplacementLevel(KeyboardState keyboardState)
+        {
+
+
+            if (keyboardState.GetPressedKeyCount() == 0)
+            {
+                animationPlayer.PlayAnimation(_idle_Animation);
+                return PositionLevel;
+            }
+            else
+            {
+                Vector2 NextPositionTmp = PositionLevel;
+                System.Diagnostics.Debug.WriteLine("[level] " + this);
+                System.Diagnostics.Debug.WriteLine("[level] //DEBUT UPDATE// : Position - X = " + PositionLevel.X + " | Y= " + PositionLevel.Y);
+
+                if (keyboardState.IsKeyDown(Keys.Left) || keyboardState.IsKeyDown(Keys.Q))
+                {
+                    NextPositionTmp = Vector2.Add(PositionLevel, new Vector2(-(_speed), 0));
+                    animationPlayer.PlayAnimation(_walk_Left_Animation);
+                }
+                if (keyboardState.IsKeyDown(Keys.Right) || keyboardState.IsKeyDown(Keys.D))
+                {
+                    NextPositionTmp = Vector2.Add(PositionLevel, new Vector2(_speed, 0));
+                    animationPlayer.PlayAnimation(_walk_Right_Animation);
+                }
+                if (keyboardState.IsKeyDown(Keys.Up) || keyboardState.IsKeyDown(Keys.Z))
+                {
+                    NextPositionTmp = Vector2.Add(PositionLevel, new Vector2(0, -(_speed)));
+                    animationPlayer.PlayAnimation(_walk_Top_Animation);
+                }
+                if (keyboardState.IsKeyDown(Keys.Down) || keyboardState.IsKeyDown(Keys.S))
+                {
+                    NextPositionTmp = Vector2.Add(PositionLevel, new Vector2(0, (_speed)));
+                    animationPlayer.PlayAnimation(_walk_Bot_Animation);
+                }
+
+                /*if (Level != null)
+                    HandleCollisions();*/
+
+                System.Diagnostics.Debug.WriteLine("[level] //FIN UPDATE NEXT POSITION// : Position - X = " + NextPositionTmp.X + " | Y= " + NextPositionTmp.Y);
+                System.Diagnostics.Debug.WriteLine("[level] //FIN UPDATE POSITION// : Position - X = " + PositionLevel.X + " | Y= " + PositionLevel.Y);
+                return NextPositionTmp;
+            }
+        }
 
 
         public void HandleCollisions()
@@ -224,7 +292,15 @@ namespace NexusDungeon.Core.Game
 
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
-            animationPlayer.Draw(gameTime, spriteBatch, Position, flip);
+            if(Level == null)
+            {
+                animationPlayer.Draw(gameTime, spriteBatch, Position, flip);
+            }
+            else
+            {
+                animationPlayer.Draw(gameTime, spriteBatch, PositionLevel, flip);
+            }
+            
         }
 
         /// <summary>
@@ -248,8 +324,8 @@ namespace NexusDungeon.Core.Game
 
         public void Reset(Vector2 position)
         {
-            Position = position;
-            
+            PositionLevel = position;
+            _speed = 3;
             animationPlayer.PlayAnimation(_idle_Animation);
         }
 

@@ -4,11 +4,15 @@
   </PropertyGroup>
   <ItemGroup>
     <None Remove="Content\Sprites\Levels\level0.txt" />
+    <None Remove="Content\Sprites\Levels\level1.txt" />
     <None Remove="Content\Sprites\Sounds\zeldawwoutsettheme.mp3" />
     <None Remove="Content\Sprites\Sounds\zeldawwtitletheme.mp3" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\Sprites\Levels\level0.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Sprites\Levels\level1.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

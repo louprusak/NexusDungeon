@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace NexusDungeon.Core.Game
 {
-    enum TileCollision
+    public enum TileCollision
     {
         /// <summary>
         /// A passable tile is one which does not hinder player motion at all.
@@ -24,7 +24,7 @@ namespace NexusDungeon.Core.Game
         Platform = 2,
     }
 
-    class Tile
+    public class Tile
     {
         public Texture2D Texture;
         public TileCollision Collision;

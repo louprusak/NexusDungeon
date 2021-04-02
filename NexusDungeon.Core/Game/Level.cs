@@ -11,7 +11,7 @@ using System.IO;
 namespace NexusDungeon.Core.Game
 {
     
-    class Level : IDisposable
+    public class Level : IDisposable
     {
         //Structure
         private Tile[,] tiles;
@@ -39,6 +39,7 @@ namespace NexusDungeon.Core.Game
         //Propriétés du Level
         public bool ReachedExit { get; set; }
         private Microsoft.Xna.Framework.Game game;
+        private NexusDungeonGame nexusgame;
         private SpriteBatch spriteBatch;
 
         //Contenu du Level
@@ -51,12 +52,14 @@ namespace NexusDungeon.Core.Game
         {
             get { return tiles.GetLength(0); }
         }
+        
 
         //################################################################################################################################################################//
         //Constructeur
         public Level(Microsoft.Xna.Framework.Game game,SpriteBatch spriteBatch,IServiceProvider serviceProvider, Stream fileStream, int levelIndex)
         {
             this.game = game;
+            this.nexusgame = (NexusDungeonGame)game;
             this.spriteBatch = spriteBatch;
 
             Content = new ContentManager(serviceProvider, "Content");
@@ -67,8 +70,8 @@ namespace NexusDungeon.Core.Game
 
             MediaPlayer.Play(game.Content.Load<Song>("Sprites/Sounds/dungeon"));
             MediaPlayer.MoveNext();
-            
 
+            
 
             exitReachedSound = Content.Load<Song>("Sprites/Sounds/forest");
         }
@@ -176,6 +179,7 @@ namespace NexusDungeon.Core.Game
                 throw new NotSupportedException("A level may only have one exit.");
 
             exit = GetBounds(x, y).Center;
+            System.Diagnostics.Debug.WriteLine("Position de la tuile exit :" + exit);
 
             return new Tile(Content.Load<Texture2D>("Sprites/sortie"), TileCollision.Passable);
         }
@@ -193,6 +197,7 @@ namespace NexusDungeon.Core.Game
 
             start = RectangleUtils.GetBottomCenter(GetBounds(x, y));
             Player = new Player(this, start);
+            nexusgame.setLevelPlayer(Player);
 
             return new Tile(Content.Load<Texture2D>("Sprites/depart"), TileCollision.Passable);
         }
@@ -261,7 +266,10 @@ namespace NexusDungeon.Core.Game
                 Player.Update(gameTime,keyboardState);
 
                 if (
-                    Player.BoundingRectangle.Contains(exit))
+                    Player.PositionLevel.X > exit.X-50 
+                    && Player.PositionLevel.X < exit.X + 50 &&
+                    Player.PositionLevel.Y > exit.Y-50
+                    && Player.PositionLevel.Y < exit.Y + 100)
                 {
                     OnExitReached();
                 }
@@ -309,6 +317,10 @@ namespace NexusDungeon.Core.Game
         {
             //Player.OnReachedExit();
             //exitReachedSound.Play();
+     
+            //System.Threading.Thread.Sleep(7000);
+            nexusgame.LoadNextLevel();
+            
             ReachedExit = true;
         }
 
