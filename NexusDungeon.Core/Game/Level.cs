@@ -118,6 +118,9 @@ namespace NexusDungeon.Core.Game
                 throw new NotSupportedException("A level must have a starting point.");
             if (exit == InvalidPosition)
                 throw new NotSupportedException("A level must have an exit.");
+
+            System.Diagnostics.Debug.WriteLine("Width" + Width + "Height" + Height);
+
         }
 
         /// <summary>
@@ -133,10 +136,10 @@ namespace NexusDungeon.Core.Game
             {
                 //Zone vide
                 case '.':
-                    return new Tile(Content.Load<Texture2D>("Sprites/vide"), TileCollision.Impassable);
+                    return new Tile(Content.Load<Texture2D>("Sprites/vide"), TileCollision.Passable);
                 //Mur
                 case '#':
-                    return new Tile(Content.Load<Texture2D>("Sprites/mur"), TileCollision.Impassable);
+                    return new Tile(Content.Load<Texture2D>("Sprites/mur"), TileCollision.Passable);
                 //Sol
                 case '_':
                     return new Tile(Content.Load<Texture2D>("Sprites/sol"), TileCollision.Passable);
@@ -219,10 +222,10 @@ namespace NexusDungeon.Core.Game
         public TileCollision GetCollision(int x, int y)
         {
             // Prevent escaping past the level ends.
-            if (x < 0 || x >= Width)
+            if (x < 0 || x >= (Width*3.5))
                 return TileCollision.Impassable;
             // Allow jumping past the level top and falling through the bottom.
-            if (y < 0 || y >= Height)
+            if (y < 0 || y >= (Height*3.5))
                 return TileCollision.Passable;
 
             return tiles[x, y].Collision;
@@ -256,19 +259,8 @@ namespace NexusDungeon.Core.Game
                 ScalePresentationArea();
 
                 Player.Update(gameTime,keyboardState);
-                
 
-                // Falling off the bottom of the level kills the player.
-                //if (Player.BoundingRectangle.Top >= Height * Tile.Height)
-                    //OnPlayerKilled(null);
-
-                //UpdateEnemies(gameTime);
-
-                // The player has reached the exit if they are standing on the ground and
-                // his bounding rectangle contains the center of the exit tile. They can only
-                // exit when they have collected all of the gems.
-                if (//Player.IsAlive &&
-                   // Player.IsOnGround &&
+                if (
                     Player.BoundingRectangle.Contains(exit))
                 {
                     OnExitReached();
@@ -343,18 +335,8 @@ namespace NexusDungeon.Core.Game
         /// </summary>
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
-            //spriteBatch.End();
-            //spriteBatch.Begin(SpriteSortMode.Immediate, null, SamplerState.PointClamp, null, null, null, globalTransformation);
-            //for (int i = 0; i <= EntityLayer; ++i)
-                //spriteBatch.Draw(layers[i], Vector2.Zero, Color.White);
-
             DrawTiles(spriteBatch);
 
-            //foreach (Gem gem in gems)
-            //gem.Draw(gameTime, spriteBatch);
-            //spriteBatch.End();
-            //spriteBatch.Begin();
-            //spriteBatch.Begin(SpriteSortMode.Immediate, null, SamplerState.PointClamp, null, null, null, globalTransformation);
             spriteBatch.End();
             spriteBatch.Begin(SpriteSortMode.Immediate, null, SamplerState.PointClamp, null, null, null, null);
             Player.Draw(gameTime, spriteBatch);
@@ -363,11 +345,6 @@ namespace NexusDungeon.Core.Game
 
             foreach (Enemy enemy in enemies)
                 enemy.Draw(gameTime);
-
-            
-
-            //for (int i = EntityLayer + 1; i < layers.Length; ++i)
-            //spriteBatch.Draw(layers[i], Vector2.Zero, Color.White);
 
         }
 
@@ -380,7 +357,7 @@ namespace NexusDungeon.Core.Game
             float verScaling = backbufferHeight / baseScreenSize.Y;
             Vector3 screenScalingFactor = new Vector3(horScaling, verScaling, 1);
             globalTransformation = Matrix.CreateScale(screenScalingFactor);
-            System.Diagnostics.Debug.WriteLine("Screen Size - Width[" + game.GraphicsDevice.PresentationParameters.BackBufferWidth + "] Height [" + game.GraphicsDevice.PresentationParameters.BackBufferHeight + "]");
+            //System.Diagnostics.Debug.WriteLine("Screen Size - Width[" + game.GraphicsDevice.PresentationParameters.BackBufferWidth + "] Height [" + game.GraphicsDevice.PresentationParameters.BackBufferHeight + "]");
         }
 
         /// <summary>

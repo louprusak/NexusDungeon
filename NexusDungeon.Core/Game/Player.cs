@@ -122,62 +122,105 @@ namespace NexusDungeon.Core.Game
 
         public void Update(GameTime gameTime, KeyboardState keyboardState)
         {
-            
-            NextPosition = Position;
-
-            System.Diagnostics.Debug.WriteLine("Position - X = "+ Position.X + " | Y= "+Position.Y);
-
-            
-
             if (keyboardState.GetPressedKeyCount() == 0)
             {
                 animationPlayer.PlayAnimation(_idle_Animation);
             }
             else
             {
-                
+                System.Diagnostics.Debug.WriteLine("//DEBUT UPDATE// : Position - X = " + Position.X + " | Y= " + Position.Y);
+
                 if (keyboardState.IsKeyDown(Keys.Left) || keyboardState.IsKeyDown(Keys.Q))
                 {
-                    NextPosition = Vector2.Add(Position, new Vector2(-(_speed), 0));
-                    animationPlayer.PlayAnimation(_walk_Left_Animation);
-                    if (keyboardState.IsKeyDown(Keys.Space))
-                    {
-                        animationPlayer.PlayAnimation(_attack_Left_Animation);
-                    }
+                    Position = Vector2.Add(Position, new Vector2(-(_speed), 0));
+                    animationPlayer.PlayAnimation(_walk_Left_Animation); 
                 }
                 if (keyboardState.IsKeyDown(Keys.Right) || keyboardState.IsKeyDown(Keys.D))
                 {
-                    NextPosition = Vector2.Add(Position, new Vector2(_speed, 0));
-                    animationPlayer.PlayAnimation(_walk_Right_Animation);
-                    if (keyboardState.IsKeyDown(Keys.Space))
-                    {
-                        animationPlayer.PlayAnimation(_attack_Right_Animation);
-                    }
+                    Position = Vector2.Add(Position, new Vector2(_speed, 0));
+                    animationPlayer.PlayAnimation(_walk_Right_Animation);  
                 }
                 if (keyboardState.IsKeyDown(Keys.Up) || keyboardState.IsKeyDown(Keys.Z))
                 {
-                    NextPosition = Vector2.Add(Position, new Vector2(0, -(_speed)));
-                    animationPlayer.PlayAnimation(_walk_Top_Animation);
-                    if (keyboardState.IsKeyDown(Keys.Space))
-                    {
-                        animationPlayer.PlayAnimation(_attack_Top_Animation);
-                    }
+                    Position = Vector2.Add(Position, new Vector2(0, -(_speed)));
+                    animationPlayer.PlayAnimation(_walk_Top_Animation);  
                 }
                 if (keyboardState.IsKeyDown(Keys.Down) || keyboardState.IsKeyDown(Keys.S))
                 {
-                    NextPosition = Vector2.Add(Position, new Vector2(0, (_speed)));
-                    animationPlayer.PlayAnimation(_walk_Bot_Animation);
-                    if (keyboardState.IsKeyDown(Keys.Space))
-                    {
-                        animationPlayer.PlayAnimation(_attack_Bot_Animation);
-                    }
+                    Position = Vector2.Add(Position, new Vector2(0, (_speed)));
+                    animationPlayer.PlayAnimation(_walk_Bot_Animation); 
                 }
-                //Position = NextPosition;
+
+                if(Level != null)
+                    HandleCollisions();
+
+                System.Diagnostics.Debug.WriteLine("//FIN FIN FIN UPDATE// : Position - X = " + Position.X + " | Y= " + Position.Y);
             }
 
         }
 
-        
+        /*if (keyboardState.IsKeyDown(Keys.Space))
+                    {
+                        animationPlayer.PlayAnimation(_attack_Left_Animation);
+                    }*/
+
+
+        public void HandleCollisions()
+        {
+            Rectangle bounds = BoundingRectangle;
+
+            // Get the player's bounding rectangle and find neighboring tiles.
+            int leftTile = (int)Math.Floor((float)bounds.Left / Tile.Width);
+            int rightTile = (int)Math.Ceiling(((float)bounds.Right / Tile.Width)) - 1;
+            int topTile = (int)Math.Floor((float)bounds.Top / Tile.Height);
+            int bottomTile = (int)Math.Ceiling(((float)bounds.Bottom / Tile.Height)) - 1;
+
+            // For each potentially colliding tile,
+            for (int y = topTile; y <= bottomTile; ++y)
+            {
+                for (int x = leftTile; x <= rightTile; ++x)
+                {
+                    // If this tile is collidable,
+                    TileCollision collision = Level.GetCollision(x, y);
+                    if (collision != TileCollision.Passable)
+                    {
+                        // Determine collision depth (with direction) and magnitude.
+                        Rectangle tileBounds = Level.GetBounds(x, y);
+                        Vector2 depth = RectangleUtils.GetIntersectionDepth(bounds, tileBounds);
+                        if (depth != Vector2.Zero)
+                        {
+                            float absDepthX = Math.Abs(depth.X);
+                            float absDepthY = Math.Abs(depth.Y);
+
+                            // Resolve the collision along the shallow axis.
+                            if (absDepthY < absDepthX || collision == TileCollision.Platform)
+                            {
+                                
+
+                                // Ignore platforms, unless we are on the ground.
+                                if (collision == TileCollision.Impassable)
+                                {
+                                    // Resolve the collision along the Y axis.
+                                    Position = new Vector2(Position.X, Position.Y + depth.Y);
+
+                                    // Perform further collisions with the new bounds.
+                                    bounds = BoundingRectangle;
+                                }
+                            }
+                            else if (collision == TileCollision.Impassable) // Ignore platforms.
+                            {
+                                // Resolve the collision along the X axis.
+                                Position = new Vector2(Position.X + depth.X, Position.Y);
+
+                                // Perform further collisions with the new bounds.
+                                bounds = BoundingRectangle;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
 
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
