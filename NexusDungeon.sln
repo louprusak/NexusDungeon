@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusDungeon.UWP", "NexusDu
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NexusDungeon.Android", "NexusDungeon.Android\NexusDungeon.Android.csproj", "{0F3D4138-5EF6-484D-AF41-61B03C06F1BF}"
 EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Setup", "Setup\Setup.vdproj", "{D489A17D-4E6F-468E-8AB4-610733BF5F1E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,7 +41,6 @@ Global
 		{E638DB71-D7CB-415F-AA8B-8FA09DF05D96}.Release|x86.Build.0 = Release|Any CPU
 		{AB7F7629-CE1D-45D7-8169-4C210D0FFE71}.Debug|Any CPU.ActiveCfg = Debug|x86
 		{AB7F7629-CE1D-45D7-8169-4C210D0FFE71}.Debug|Any CPU.Build.0 = Debug|x86
-		{AB7F7629-CE1D-45D7-8169-4C210D0FFE71}.Debug|Any CPU.Deploy.0 = Debug|x86
 		{AB7F7629-CE1D-45D7-8169-4C210D0FFE71}.Debug|ARM.ActiveCfg = Debug|ARM
 		{AB7F7629-CE1D-45D7-8169-4C210D0FFE71}.Debug|ARM.Build.0 = Debug|ARM
 		{AB7F7629-CE1D-45D7-8169-4C210D0FFE71}.Debug|ARM.Deploy.0 = Debug|ARM
@@ -82,6 +83,15 @@ Global
 		{0F3D4138-5EF6-484D-AF41-61B03C06F1BF}.Release|x86.ActiveCfg = Release|Any CPU
 		{0F3D4138-5EF6-484D-AF41-61B03C06F1BF}.Release|x86.Build.0 = Release|Any CPU
 		{0F3D4138-5EF6-484D-AF41-61B03C06F1BF}.Release|x86.Deploy.0 = Release|Any CPU
+		{D489A17D-4E6F-468E-8AB4-610733BF5F1E}.Debug|Any CPU.ActiveCfg = Debug
+		{D489A17D-4E6F-468E-8AB4-610733BF5F1E}.Debug|Any CPU.Build.0 = Debug
+		{D489A17D-4E6F-468E-8AB4-610733BF5F1E}.Debug|ARM.ActiveCfg = Debug
+		{D489A17D-4E6F-468E-8AB4-610733BF5F1E}.Debug|x64.ActiveCfg = Debug
+		{D489A17D-4E6F-468E-8AB4-610733BF5F1E}.Debug|x86.ActiveCfg = Debug
+		{D489A17D-4E6F-468E-8AB4-610733BF5F1E}.Release|Any CPU.ActiveCfg = Release
+		{D489A17D-4E6F-468E-8AB4-610733BF5F1E}.Release|ARM.ActiveCfg = Release
+		{D489A17D-4E6F-468E-8AB4-610733BF5F1E}.Release|x64.ActiveCfg = Release
+		{D489A17D-4E6F-468E-8AB4-610733BF5F1E}.Release|x86.ActiveCfg = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
