@@ -1,5 +1,11 @@
 # Nexus Dungeon
 
+### Mea Culpa
+
+Nous sommes vraiment désolé de vous présenter qu'une petite partie de ce que nous voulions faire sur le jeu. C'est pour cela que la version actuelle n'est pas très riche et qu'il ya quelques problèmes...
+
+Nous sommes en train de travailler sur le contenu des levels, à savoir en premier des enemis et par la suite des récompenses.
+
 ### Installation du jeu
 
 Nous avons mis à disposition un installeur pour le jeu. Pour l'utiliser vous devez aller dans le dossier **Setup** puis dans **Debug** et double-cliquez sur le **setup.exe**. 
