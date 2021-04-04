@@ -80,11 +80,11 @@ namespace NexusDungeon.Core.Game
         //################################################################################################################################################################//
         //METHODES
 
-
+        /// <summary>
+        /// Méthode de chargement des assets et du joueur
+        /// </summary>
         protected void LoadContent()
         {
-            
-
             if (game != null)
             {
                 _idle_Animation = new Animation(game.Content.Load<Texture2D>("Sprites/Player/idle"), 0.2f, true);
@@ -113,9 +113,8 @@ namespace NexusDungeon.Core.Game
             {
                 throw new NotSupportedException("Un player doit avoir un contexte. Soit un game, soit un level.");
             }
-
-            // Calculate bounds within texture size.            
-            int width = (int)(_idle_Animation.FrameWidth * 0.4); // ???
+          
+            int width = (int)(_idle_Animation.FrameWidth * 0.4);
             int left = (_idle_Animation.FrameWidth - width) / 2;
             int height = (int)(_idle_Animation.FrameHeight * 0.8);
             int top = _idle_Animation.FrameHeight - height;
@@ -123,6 +122,12 @@ namespace NexusDungeon.Core.Game
 
         }
 
+
+        /// <summary>
+        /// Méthode de mise à jour du player
+        /// </summary>
+        /// <param name="gameTime"></param>
+        /// <param name="keyboardState"></param>
         public void Update(GameTime gameTime, KeyboardState keyboardState)
         {
             if(Level == null)
@@ -137,11 +142,12 @@ namespace NexusDungeon.Core.Game
 
         }
 
-        /*if (keyboardState.IsKeyDown(Keys.Space))
-                    {
-                        animationPlayer.PlayAnimation(_attack_Left_Animation);
-                    }*/
-
+        
+        /// <summary>
+        /// Méthode gérant les déplacements du player dans le Hub du jeu
+        /// </summary>
+        /// <param name="keyboardState"></param>
+        /// <returns></returns>
         private Vector2 DeplacementHub(KeyboardState keyboardState)
         {
             
@@ -178,15 +184,18 @@ namespace NexusDungeon.Core.Game
                     animationPlayer.PlayAnimation(_walk_Bot_Animation);
                 }
 
-                /*if (Level != null)
-                    HandleCollisions();*/
-
                 System.Diagnostics.Debug.WriteLine("[hub] //FIN UPDATE NEXT POSITION// : Position - X = " + NextPositionTmp.X + " | Y= " + NextPositionTmp.Y);
                 System.Diagnostics.Debug.WriteLine("[hub] //FIN UPDATE POSITION// : Position - X = " + Position.X + " | Y= " + Position.Y);
                 return NextPositionTmp;
             }
         }
 
+
+        /// <summary>
+        /// Méthode gérant le déplacement du player dans un level
+        /// </summary>
+        /// <param name="keyboardState"></param>
+        /// <returns></returns>
         private Vector2 DeplacementLevel(KeyboardState keyboardState)
         {
 
@@ -223,8 +232,6 @@ namespace NexusDungeon.Core.Game
                     animationPlayer.PlayAnimation(_walk_Bot_Animation);
                 }
 
-                /*if (Level != null)
-                    HandleCollisions();*/
 
                 System.Diagnostics.Debug.WriteLine("[level] //FIN UPDATE NEXT POSITION// : Position - X = " + NextPositionTmp.X + " | Y= " + NextPositionTmp.Y);
                 System.Diagnostics.Debug.WriteLine("[level] //FIN UPDATE POSITION// : Position - X = " + PositionLevel.X + " | Y= " + PositionLevel.Y);
@@ -233,63 +240,11 @@ namespace NexusDungeon.Core.Game
         }
 
 
-        public void HandleCollisions()
-        {
-            Rectangle bounds = BoundingRectangle;
-
-            // Get the player's bounding rectangle and find neighboring tiles.
-            int leftTile = (int)Math.Floor((float)bounds.Left / Tile.Width);
-            int rightTile = (int)Math.Ceiling(((float)bounds.Right / Tile.Width)) - 1;
-            int topTile = (int)Math.Floor((float)bounds.Top / Tile.Height);
-            int bottomTile = (int)Math.Ceiling(((float)bounds.Bottom / Tile.Height)) - 1;
-
-            // For each potentially colliding tile,
-            for (int y = topTile; y <= bottomTile; ++y)
-            {
-                for (int x = leftTile; x <= rightTile; ++x)
-                {
-                    // If this tile is collidable,
-                    TileCollision collision = Level.GetCollision(x, y);
-                    if (collision != TileCollision.Passable)
-                    {
-                        // Determine collision depth (with direction) and magnitude.
-                        Rectangle tileBounds = Level.GetBounds(x, y);
-                        Vector2 depth = RectangleUtils.GetIntersectionDepth(bounds, tileBounds);
-                        if (depth != Vector2.Zero)
-                        {
-                            float absDepthX = Math.Abs(depth.X);
-                            float absDepthY = Math.Abs(depth.Y);
-
-                            // Resolve the collision along the shallow axis.
-                            if (absDepthY < absDepthX || collision == TileCollision.Platform)
-                            {
-                                
-
-                                // Ignore platforms, unless we are on the ground.
-                                if (collision == TileCollision.Impassable)
-                                {
-                                    // Resolve the collision along the Y axis.
-                                    Position = new Vector2(Position.X, Position.Y + depth.Y);
-
-                                    // Perform further collisions with the new bounds.
-                                    bounds = BoundingRectangle;
-                                }
-                            }
-                            else if (collision == TileCollision.Impassable) // Ignore platforms.
-                            {
-                                // Resolve the collision along the X axis.
-                                Position = new Vector2(Position.X + depth.X, Position.Y);
-
-                                // Perform further collisions with the new bounds.
-                                bounds = BoundingRectangle;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-
+        /// <summary>
+        /// Méthode d'affichage du player
+        /// </summary>
+        /// <param name="gameTime"></param>
+        /// <param name="spriteBatch"></param>
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
             if(Level == null)
@@ -322,6 +277,10 @@ namespace NexusDungeon.Core.Game
             _speed = 5;
         }
 
+        /// <summary>
+        /// Reset la position et les stats du joueur dans les levels.
+        /// </summary>
+        /// <param name="position"></param>
         public void Reset(Vector2 position)
         {
             PositionLevel = position;

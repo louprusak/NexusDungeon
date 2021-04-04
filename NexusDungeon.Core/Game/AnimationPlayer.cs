@@ -9,7 +9,7 @@ namespace NexusDungeon.Core.Game
     struct AnimationPlayer
     {
         /// <summary>
-        /// Get l'animation courrante.
+        /// Animation courrante.
         /// </summary>
         private Animation Animation { get; set; }
 

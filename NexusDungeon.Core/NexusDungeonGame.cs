@@ -18,13 +18,13 @@ namespace NexusDungeon.Core
         // 512/16 = 32 tuiles largeur et 288/16 = 18 tuiles en hauteur car les tuiles font du 16 par 16
         Vector2 baseScreenSize = new Vector2(512, 288);
 
-        //Levels
+        //Propriétés Levels
         public int levelIndex = -1;
         private const int numberOfLevels = 2;
         private Level level;
         private bool onLevel = false;
 
-        //Hub
+        //Propriétés Hub
         private Texture2D _background;
         private Color[] _colorBackground;
         private KeyboardState keyboardState;
@@ -57,7 +57,9 @@ namespace NexusDungeon.Core
         //METHODES MONOGAME
 
         
-
+        /// <summary>
+        /// Méthode de chargement du jeu
+        /// </summary>
         protected override void LoadContent()
         {
             this.Content.RootDirectory = "Content";
@@ -67,13 +69,10 @@ namespace NexusDungeon.Core
             _background = Content.Load<Texture2D>("Sprites/Hub");
             //_background = Content.Load<Texture2D>("Sprites/hubtest");
 
-            
-
             _exitOverlay = Content.Load<Texture2D>("Sprites/Overlays/exitgame");
             _playLevelOverlay = Content.Load<Texture2D>("Sprites/Overlays/enterdungeon");
             _nexusdungeon = Content.Load<Texture2D>("Sprites/Overlays/nexusdungeon");
             
-
             ScalePresentationArea();
 
             _colorBackground = new Color[_background.Width * _background.Height];
@@ -92,6 +91,10 @@ namespace NexusDungeon.Core
 
         }
 
+        /// <summary>
+        /// Méthode de mise à jour du jeu suite aux actions
+        /// </summary>
+        /// <param name="gameTime"></param>
         protected override void Update(GameTime gameTime)
         {
             //Check sortie du jeu
@@ -130,6 +133,11 @@ namespace NexusDungeon.Core
             //base.Update(gameTime);
         }
 
+
+        /// <summary>
+        /// Méthode d'affichage du jeu
+        /// </summary>
+        /// <param name="gameTime"></param>
         protected override void Draw(GameTime gameTime)
         {
 
@@ -168,17 +176,29 @@ namespace NexusDungeon.Core
         //################################################################################################################################################################//
         //METHODES
 
+        /// <summary>
+        /// Permet de récupérer le couleur à une position donnée
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <returns></returns>
         private Color GetColorAt(int x, int y)
         {
             Color color = Color.White;
-            // La position doit être valide
 
+            // La position doit être valide
             if (x >= 0 && x < _background.Width && y >= 0 && y < _background.Height)
                 color = _colorBackground[x + y * _background.Width];
 
             return color;
         }
 
+        /// <summary>
+        /// Vérifie si le personnage peut se déplacer depuis sa position en fonction de la couleur du fond
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <returns></returns>
         private bool CanMove(int x, int y)
         {
             
@@ -190,20 +210,13 @@ namespace NexusDungeon.Core
                 return false;
             }
             
-            /*if (GetColorAt(x, y) == Color.White)
-               return false;
-            
-            if (GetColorAt(x, y) != _colorBackground[1024 + 200 * _background.Width])
-                return true;
-            else
-                return false;
-            
-            return true;*/
         }
 
+        /// <summary>
+        /// Méthode de rendu upscale du jeu
+        /// </summary>
         public void ScalePresentationArea()
         {
-            //Work out how much we need to scale our graphics to fill the screen
             backbufferWidth = GraphicsDevice.PresentationParameters.BackBufferWidth;
             backbufferHeight = GraphicsDevice.PresentationParameters.BackBufferHeight;
             float horScaling = backbufferWidth / baseScreenSize.X;
@@ -214,30 +227,31 @@ namespace NexusDungeon.Core
             //System.Diagnostics.Debug.WriteLine("Screen Size - Width[" + GraphicsDevice.PresentationParameters.BackBufferWidth + "] Height [" + GraphicsDevice.PresentationParameters.BackBufferHeight + "]");
         }
 
+        /// <summary>
+        /// Méthode de chargement du prochain niveau
+        /// </summary>
         public void LoadNextLevel()
         {
-            // move to the next level
-            levelIndex = (levelIndex + 1);// % numberOfLevels;
+            levelIndex = (levelIndex + 1);
 
             if (levelIndex > numberOfLevels-1)
             {
                 onLevel = false;
             }
             else{
-                // Unloads the content for the current level before loading the next one.
                 if (level != null)
                     level.Dispose();
 
-                // Load the level.
                 string levelPath = string.Format("Content/Sprites/Levels/level{0}.txt", levelIndex);
                 using (Stream fileStream = TitleContainer.OpenStream(levelPath))
                     level = new Level(this, _spriteBatch, Services, fileStream, levelIndex);
             }
-                
-
-            
         }
 
+
+        /// <summary>
+        /// Méthode de lancement du prochain niveau
+        /// </summary>
         public void PlayLevel()
         {
             Vector2 overlaySize = new Vector2(_playLevelOverlay.Width, _playLevelOverlay.Height);
@@ -250,11 +264,19 @@ namespace NexusDungeon.Core
             }
         }
 
+        /// <summary>
+        /// Méthode qui retourne le centre de la fenêtre
+        /// </summary>
+        /// <returns></returns>
         public Vector2 getWindowCenter()
         {
             return new Vector2(baseScreenSize.X / 2, baseScreenSize.Y / 2);
         }
 
+
+        /// <summary>
+        /// Méthode de fermeture du jeu
+        /// </summary>
         public void exit()
         {
             Vector2 overlaySize = new Vector2(_exitOverlay.Width, _exitOverlay.Height);
@@ -265,7 +287,10 @@ namespace NexusDungeon.Core
             }
         }
 
-
+        /// <summary>
+        /// Setter du player du level
+        /// </summary>
+        /// <param name="player"></param>
         public void setLevelPlayer(Player player)
         {
             this.LevelPlayer = player;

@@ -6,34 +6,38 @@ namespace NexusDungeon.Core.Game
     public enum TileCollision
     {
         /// <summary>
-        /// A passable tile is one which does not hinder player motion at all.
+        /// Une tuile traversable (passable) permet au joueur de se déplacer dessus.
         /// </summary>
         Passable = 0,
 
         /// <summary>
-        /// An impassable tile is one which does not allow the player to move through
-        /// it at all. It is completely solid.
+        /// Une tuile non traversable (impassable) ne permet pas au joueur de la traverser, il en peut donc pas se déplacer dessus
         /// </summary>
         Impassable = 1,
-
-        /// <summary>
-        /// A platform tile is one which behaves like a passable tile except when the
-        /// player is above it. A player can jump up through a platform as well as move
-        /// past it to the left and right, but can not fall down through the top of it.
-        /// </summary>
-        Platform = 2,
     }
 
     public class Tile
     {
+        //Texture de la tuile
         public Texture2D Texture;
+
+        //Type de collision de la tuile
         public TileCollision Collision;
 
+        //Largeur de la tuile
         public const int Width = 16;
+
+        //Hauteur de la tuile
         public const int Height = 16;
 
+        //Taille de la tuile (en vecteur)
         public static readonly Vector2 Size = new Vector2(Width, Height);
 
+        /// <summary>
+        /// Constructeur de la tuile
+        /// </summary>
+        /// <param name="texture"></param>
+        /// <param name="collision"></param>
         public Tile(Texture2D texture, TileCollision collision)
         {
             Texture = texture;

@@ -8,7 +8,11 @@ namespace NexusDungeon.Core.Game
 {
     public class GameObject : DrawableGameComponent
     {
+        //SpriteBatch de l'objet
         protected readonly SpriteBatch _spriteBatch;
+
+        //################################################################################################################################################################//
+        //CONSTRUCTEUR
 
         public GameObject(Microsoft.Xna.Framework.Game game, SpriteBatch spriteBatch) : base(game)
         {
